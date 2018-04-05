@@ -49,6 +49,7 @@
 
 let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4MndwZDJvcGhpNjF2In0.LgHQ5McMsqeSciorxS-RBw'
 let geojsonFeature, censusData, zillowData;
+let geoJson; // To hold leaflet's default geoJSON container
 
 d3.queue()
 .defer(d3.csv, "/data/census_data.csv")
@@ -78,9 +79,37 @@ d3.queue()
       accessToken: mapboxAccessToken
   }).addTo(map);
 
+  /* Zooming on click feature */
+  let highlightFeature = function(e) {
+    let layer = e.target;
+    layer.setStyle({
+      weight: 5,
+      color: '#666',
+      dashArray: '',
+      fillOpacity: 0.7
+    });
+  }
+
+  let resetHighlight = function(e) {
+    geoJson.resetStyle(e.target); //geoJson has to be declared first
+  }
+
+  let zoomToFeature = function(e) {
+    map.fitBounds(e.target.getBounds()); //map has to be declared first
+  }
+
+  let onEachFeature = function(feature, layer) {
+    layer.on({
+      mouseover: highlightFeature,
+      mouseout: resetHighlight,
+      click: zoomToFeature
+    });
+  }
+
   // add allegheny county census tract boundaries
-  let geoJson = L.geoJSON(geojsonFeature, {
-    style: populationMapLayer
+  geoJson = L.geoJSON(geojsonFeature, {
+    style: populationMapLayer,
+    onEachFeature: onEachFeature
   }).addTo(map);
   map.fitBounds(geoJson.getBounds());
 
