@@ -16,10 +16,12 @@
  integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
  crossorigin=""></script>
 
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
 <!-- Import Our Custom Scripts -->
 
-<body>
 
+<body>
   <!-- Layout of Search Engine -->
   <div class="container-fluid">
     <!-- Search Bar Area -->
@@ -28,13 +30,19 @@
         Hello World
       </div>
     </div>
+    <!-- Filters -->
+    <div class="row">
+      <div class="col-lg-12" style="background-color: grey">
+        Filters
+      </div>
+    </div>
     <!-- History and Map -->
     <div class="row">
       <!-- Left Column -->
-      <div class="col-lg-5" style="background-color: blue">
+      <div class="col-lg-3" style="background-color: blue">
         Hello World
       </div>
-      <div class="col-lg-7">
+      <div class="col-lg-9">
             <div id="mapid"></div>
       </div>
     </div>
@@ -43,14 +51,28 @@
 
 <script>
 let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4MndwZDJvcGhpNjF2In0.LgHQ5McMsqeSciorxS-RBw'
+
+// Render map with Leaflet
 let mymap = L.map('mapid').setView([40.4406, -79.9959], 13);
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 18,
-    id: 'mapbox.streets',
+    id: 'mapbox.light',
     accessToken: mapboxAccessToken
 }).addTo(mymap);
 
-L.geoJson()
+let geojsonFeature;
+
+d3.json("/Allegheny_County_Census_Tracts_2016.geojson", function(data) {
+  geojsonFeature = data;
+  L.geoJSON(geojsonFeature).addTo(mymap);
+})
+
+// TODO parse csv data first
+
+// TODO join data by census tract
+
+// TODO start mapping!
+
 </script>
