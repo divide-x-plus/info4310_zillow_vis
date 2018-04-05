@@ -49,7 +49,8 @@
 
 let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4MndwZDJvcGhpNjF2In0.LgHQ5McMsqeSciorxS-RBw'
 let geojsonFeature, censusData, zillowData;
-let geoJson; // To hold leaflet's default geoJSON container
+let geoJson;
+// To hold leaflet's default geoJSON container
 
 d3.queue()
 .defer(d3.csv, "/data/census_data.csv")
@@ -79,6 +80,22 @@ d3.queue()
       accessToken: mapboxAccessToken
   }).addTo(map);
 
+  /*Custom INfo COntrol on the side*/
+  let info = L.control();
+  info.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'info'); //create a div with a class "info"
+    this.update();
+    return this._div;
+  }
+
+  // a function to update the control based on feature properties
+  info.update = function(props) {
+    this._div.innerHTML = '<h4>Population Density in this region</h4>' + (
+      props ? '<b>' + props.census.total_pop + '</b>' : 'Hover over a place');
+  };
+
+  info.addTo(map);
+
   /* Zooming on click feature */
   let highlightFeature = function(e) {
     let layer = e.target;
@@ -88,10 +105,12 @@ d3.queue()
       dashArray: '',
       fillOpacity: 0.7
     });
+    info.update(layer.feature.properties);
   }
 
   let resetHighlight = function(e) {
     geoJson.resetStyle(e.target); //geoJson has to be declared first
+    info.update();
   }
 
   let zoomToFeature = function(e) {
@@ -106,12 +125,40 @@ d3.queue()
     });
   }
 
+  /*Population choropleth*/
+  let populationExtent = d3.extent(geojsonFeature.features, function(d) {
+      if (d.properties.census) {
+          return Number(d.properties.census.total_pop)
+      }
+  })
+
+  let populationColorScheme = function(d) {
+      return d > 10000 ? '#800026' :
+             d > 5000  ? '#BD0026' :
+             d > 2000  ? '#E31A1C' :
+             d > 1000  ? '#FC4E2A' :
+             d > 500   ? '#FD8D3C' :
+             d > 200   ? '#FEB24C' :
+             d > 100   ? '#FED976' :
+                        '#FFEDA0';
+    }
+
+  let populationMapLayer = function(feature) {
+    return {
+        fillColor: populationColorScheme((feature.properties.census !== null) ? Number(feature.properties.census.total_pop) : 0),
+        weight: 1,
+        opacity: 0.5,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.4
+    };
+  }
+
   // add allegheny county census tract boundaries
   geoJson = L.geoJSON(geojsonFeature, {
     style: populationMapLayer,
     onEachFeature: onEachFeature
   }).addTo(map);
-  map.fitBounds(geoJson.getBounds());
 
   // add markers and tooltips
   zillowData.forEach(function(house) {
