@@ -47,15 +47,17 @@
 <script>
 
 let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4MndwZDJvcGhpNjF2In0.LgHQ5McMsqeSciorxS-RBw'
-let geojsonFeature, censusData;
+let geojsonFeature, censusData, zillowData;
 
 d3.queue()
 .defer(d3.csv, "/data/census_data.csv")
 .defer(d3.json,"/data/allegheny_county_census_tracts_2016.geojson")
-.await(function(error, f1, f2) {
+.defer(d3.csv, "/data/zillow_pittsburgh.csv")
+.await(function(error, f1, f2, f3) {
   if (error) throw error;
   censusData = f1;
   geojsonFeature = f2; //geoJSON.features contain polygons
+  zillowData = f3;
 
   geojsonFeature.features.forEach(function(row) {
     // ensure no missing value from census tract id
@@ -76,7 +78,24 @@ d3.queue()
   }).addTo(map);
 
   // add allegheny county census tract boundaries
-  L.geoJSON(geojsonFeature).addTo(map);
+  let geoJson = L.geoJSON(geojsonFeature, {
+    style: function(feature) { //feature represents geometric shapes
+      return {
+        weight: 1,
+        opacity: 0.5,
+        color: '#ff0000',
+        fillcolor: '#0000ff',
+        fillOpacity: 0.2
+      }
+    }
+  }).addTo(map);
+  map.fitBounds(geoJson.getBounds());
+
+  zillowData.forEach(function(house) {
+    L.marker([Number(house.Latitude), Number(house.Longitude)])
+      .addTo(map)
+      .bindPopup(house["Street Address"]);
+  })
 });
 
 </script>
