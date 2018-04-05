@@ -15,6 +15,7 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 
 <!-- Import Our Custom Scripts -->
+<script src="layers.js"></script>
 
 <body>
   <!-- Layout of Search Engine -->
@@ -79,16 +80,7 @@ d3.queue()
 
   // add allegheny county census tract boundaries
   let geoJson = L.geoJSON(geojsonFeature, {
-    // style: function(feature) { //feature represents geometric shapes
-    //   return {
-    //     weight: 1,
-    //     opacity: 0.5,
-    //     color: '#ff0000',
-    //     fillcolor: '#0000ff',
-    //     fillOpacity: 0.2
-    //   }
-    // }
-    style: style
+    style: populationMapLayer
   }).addTo(map);
   map.fitBounds(geoJson.getBounds());
 
@@ -98,35 +90,6 @@ d3.queue()
       .addTo(map)
       .bindPopup(house["Street Address"]);
   })
-
-  // TODO add example map layer; needs converting to filter function
-  let pop_extent = d3.extent(geojsonFeature.features, function(d) {
-      if (d.properties.census) {
-          return Number(d.properties.census.total_pop)
-      }
-  })
-
-  function getColor(d) {
-    return d > 10000 ? '#800026' :
-           d > 5000  ? '#BD0026' :
-           d > 2000  ? '#E31A1C' :
-           d > 1000  ? '#FC4E2A' :
-           d > 500   ? '#FD8D3C' :
-           d > 200   ? '#FEB24C' :
-           d > 100   ? '#FED976' :
-                      '#FFEDA0';
-  }
-
-  function style(feature) {
-    return {
-        fillColor: getColor((feature.properties.census !== null) ? Number(feature.properties.census.total_pop) : 0),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.7
-    };
-  }
 });
 
 </script>
