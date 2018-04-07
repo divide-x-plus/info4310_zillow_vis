@@ -16,6 +16,7 @@
 
 <!-- Import Our Custom Scripts -->
 <script src="layers.js"></script>
+<script src="Search.js"></script>
 
 <body>
   <!-- Layout of Search Engine -->
@@ -28,8 +29,13 @@
     </div>
     <!-- Filters -->
     <div class="row">
-      <div class="col-lg-12" style="background-color: grey">
-        Filters
+      <div class="col-lg-12" style="background-color: white">
+        <div class='search_bar'>
+          <button type="button" class="btn btn-info">Prices</button>
+          <button type="button" class="btn btn-info">Default</button>
+          <button type="button" class="btn btn-info">Default</button>
+          <button type="button" class="btn btn-info">Default</button>
+        </div>
       </div>
     </div>
     <!-- History and Map -->
@@ -53,9 +59,9 @@ let geoJson;
 // To hold leaflet's default geoJSON container
 
 d3.queue()
-.defer(d3.csv, "/data/census_data.csv")
-.defer(d3.json,"/data/allegheny_county_census_tracts_2016.geojson")
-.defer(d3.csv, "/data/zillow_pittsburgh.csv")
+.defer(d3.csv, "./data/census_data.csv")
+.defer(d3.json,"./data/allegheny_county_census_tracts_2016.geojson")
+.defer(d3.csv, "./data/zillow_pittsburgh.csv")
 .await(function(error, f1, f2, f3) {
   if (error) throw error;
   censusData = f1;
@@ -75,7 +81,9 @@ d3.queue()
   let map = L.map('mapid').setView([40.4406, -79.9959], 13);
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-      maxZoom: 18,
+      maxZoom: 15,
+      minZoom: 12,
+      zoomSnap: 0.2,
       id: 'mapbox.light',
       accessToken: mapboxAccessToken
   }).addTo(map);
@@ -160,12 +168,9 @@ d3.queue()
     onEachFeature: onEachFeature
   }).addTo(map);
 
-  // add markers and tooltips
-  zillowData.forEach(function(house) {
-    L.marker([Number(house.Latitude), Number(house.Longitude)])
-      .addTo(map)
-      .bindPopup(house["Street Address"]);
-  })
+  show_houses(zillowData, map);
+  filter_by_prices(zillowData, 1000);
+
 });
 
 </script>
