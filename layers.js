@@ -29,3 +29,10 @@ let populationMapLayer = function(feature) {
       fillOpacity: 0.4
   };
 }
+
+//TODO update function for heatmap
+
+/* data source would be  */
+let testFunc = function(feature, dataSource) {
+  //TODO trigger update function
+}
