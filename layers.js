@@ -67,7 +67,7 @@ function showPopMapLayer(feature, map) {
   // helper function to update the control based on feature properties
   info.update = function(props) {
     this._div.innerHTML = '<h4>Population Density in this region</h4>' + (
-        props ? '<b>' + 'size of population: ' + props.census.total_pop + '</b>' : 'Hover over a place');
+        props ? '<b>' + 'size of population: ' + props.census.total_pop + '</b>' : 'Missing Data 😢');
   }
   info.addTo(map);
 }

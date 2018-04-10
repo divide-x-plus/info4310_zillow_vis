@@ -63,45 +63,45 @@ d3.queue()
   zillowData = f3;
 
   // parse data to their appropriate datatype before data join
-  censusData.forEach(function(e) {
-    e.bycicle = +e.bycicle;
-    e.car_truck_van = +e.car_truck_van;
-    e.car_truck_van_alone = +e.car_truck_van_alone;
-    e.car_truck_van_carpooled = +e.car_truck_van_carpooled;
-    e.female_percent = +e.female_percent;
-    e.male_percent = +e.male_percent;
-    e.mean_travel_time = +e.mean_travel_time;
-    e.median_age = +e.median_age;
-    e.median_income = +e.median_income;
-    e.public_transport = +e.public_transport;
-    e.total_commute = +e.total_commute;
-    e.total_pop = +e.total_pop;
-    e.walked = +e.walked;
-  })
-
-  zillowData.forEach(function(e){
-    e.Bathroom = +e.Bathroom;
-    e.Bedrooms = +e.Bedrooms;
-    e["Finished Size (Sq.Ft.)"] = +e["Finished Size (Sq.Ft.)"];
-    e["Last Sold Date"] = new Date(e["Last Sold Date"]);
-    e["Last Sold Price"] = +e["Last Sold Price"];
-    e["Lot Size (Sq.Ft.)"] = +e["Lot Size (Sq.Ft.)"];
-    e["Months Since Last Sold"] = +e["Months Since Last Sold"];
-    e["Rent Amount"] = +e["Rent Amount"];
-    e["Rent Amt 1-Week Change"] = +e["Rent Amt 1-Week Change"];
-    e["Rent Amt Maximum"] = +e["Rent Amt Maximum"];
-    e["Rent-to-Finished Size Ratio"] = +e["Rent-to-Finished Size Ratio"];
-    e["Sale Amount"] = +e["Sale Amount"];
-    e["Sale Amt 1-Week Change"] = +e["Sale Amt 1-Week Change"];
-    e["Sale Amt Maximum"] = +e["Sale Amt Maximum"];
-    e["Sale Amt Minimum"] = +e["Sale Amt Minimum"];
-    e["Sale-to-Finished Size Ratio"] = +e["Sale-to-Finished Size Ratio"];
-    e["Sale-to-Rent Ratio"] = +e["Sale-to-Rent Ratio"];
-    e["Tax Assessment Amt"] = +e["Tax Assessment Amt"];
-    e["Tax Assessment Year"] = +e["Tax Assessment Year"];
-    e["Total Rooms"] = +e["Total Rooms"];
-    e["Year Built"] = +e["Year Built"];
-  })
+  // censusData.forEach(function(e) {
+  //   e.bycicle = +e.bycicle;
+  //   e.car_truck_van = +e.car_truck_van;
+  //   e.car_truck_van_alone = +e.car_truck_van_alone;
+  //   e.car_truck_van_carpooled = +e.car_truck_van_carpooled;
+  //   e.female_percent = +e.female_percent;
+  //   e.male_percent = +e.male_percent;
+  //   e.mean_travel_time = +e.mean_travel_time;
+  //   e.median_age = +e.median_age;
+  //   e.median_income = +e.median_income;
+  //   e.public_transport = +e.public_transport;
+  //   e.total_commute = +e.total_commute;
+  //   e.total_pop = +e.total_pop;
+  //   e.walked = +e.walked;
+  // })
+  //
+  // zillowData.forEach(function(e){
+  //   e.Bathroom = +e.Bathroom;
+  //   e.Bedrooms = +e.Bedrooms;
+  //   e["Finished Size (Sq.Ft.)"] = +e["Finished Size (Sq.Ft.)"];
+  //   e["Last Sold Date"] = new Date(e["Last Sold Date"]);
+  //   e["Last Sold Price"] = +e["Last Sold Price"];
+  //   e["Lot Size (Sq.Ft.)"] = +e["Lot Size (Sq.Ft.)"];
+  //   e["Months Since Last Sold"] = +e["Months Since Last Sold"];
+  //   e["Rent Amount"] = +e["Rent Amount"];
+  //   e["Rent Amt 1-Week Change"] = +e["Rent Amt 1-Week Change"];
+  //   e["Rent Amt Maximum"] = +e["Rent Amt Maximum"];
+  //   e["Rent-to-Finished Size Ratio"] = +e["Rent-to-Finished Size Ratio"];
+  //   e["Sale Amount"] = +e["Sale Amount"];
+  //   e["Sale Amt 1-Week Change"] = +e["Sale Amt 1-Week Change"];
+  //   e["Sale Amt Maximum"] = +e["Sale Amt Maximum"];
+  //   e["Sale Amt Minimum"] = +e["Sale Amt Minimum"];
+  //   e["Sale-to-Finished Size Ratio"] = +e["Sale-to-Finished Size Ratio"];
+  //   e["Sale-to-Rent Ratio"] = +e["Sale-to-Rent Ratio"];
+  //   e["Tax Assessment Amt"] = +e["Tax Assessment Amt"];
+  //   e["Tax Assessment Year"] = +e["Tax Assessment Year"];
+  //   e["Total Rooms"] = +e["Total Rooms"];
+  //   e["Year Built"] = +e["Year Built"];
+  // })
 
   geojsonFeature.features.forEach(function(row) {
     // ensure no missing value from census tract id
@@ -127,7 +127,6 @@ d3.queue()
 
   d3.select("#pop-btn")
     .on("click", function() {
-      console.log("clicked!");
       showPopMapLayer(geojsonFeature, map);
       // TODO: Include a remove_dots function
       // need to call show_houses again so dots are on top of map

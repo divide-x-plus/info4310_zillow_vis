@@ -31,10 +31,28 @@ function mouse_click_event(d){
 
 }
 
+function addToFavorite(d) {
+  d3.select("#" + d["ZPID"])
+  .on("click", function(){
+    console.log(d["ZPID"]);
+  })
+}
+
 function show_houses(coords, map){
+  // Add To Favorite function
+
+
   // add markers and tooltips
   coords.forEach(function(house) {
     house.show = true;
+    let contents = String(
+      '<button type="button" class="btn"' + 'onclick='+ addToFavorite(house)  +'id="' + house["ZPID"] + '">' +
+      'Add To Favorite</button>' +
+      "<b>$" + house["Rent Amount"] + "</b>" + "<br>" +
+      house["Bedrooms"] + "bd" + "        "
+      + house["Bathroom"] + "ba" + "        "
+      + house["Lot Size (Sq.Ft.)"] + "sqft"
+    )
     var cMarker = L.circleMarker(
       [Number(house.Latitude), Number(house.Longitude)],
       {
@@ -45,15 +63,24 @@ function show_houses(coords, map){
          opacity : 0,
          fillOpacity : 0.9
       });
-      cMarker.on("click", mouse_click_event)
-      cMarker.on("mouseout", mouse_out_event)
-      cMarker.addTo(map)
-      .bindPopup(house["Street Address"]);
+    cMarker.on("click", mouse_click_event)
+    cMarker.on("mouseout", mouse_out_event)
 
-      // bind data so later we can modify
-      d3.selectAll('.circle_plots')
-      .data(coords)
-      // .on("click", mouse_click_event);
+    // map.on("zoomend", function(){
+    //   if (map.getZoom() < 10) {
+    //     cMarker.addTo(map).bindPopup(contents);
+    //   } else {
+    //     cMarker.addTo(map).bindPopup("something");
+    //   }
+    // })
+
+    cMarker.addTo(map)
+    .bindPopup(contents);
+
+    // bind data so later we can modify
+    d3.selectAll('.circle_plots')
+    .data(coords)
+    // .on("click", mouse_click_event);
   })
 }
 
@@ -67,9 +94,7 @@ function show_search_result(res){
   })
   .attr('fill', function(d){
     return d.show ? 'blue' : 'grey';
-  })
-  ;
-
+  });
 }
 
 function filter_by_prices(data,high){
