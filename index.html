@@ -16,7 +16,7 @@
 
 <!-- Import Our Custom Scripts -->
 <script src="layers.js"></script>
-<script src="Search.js"></script>
+<script src="search.js"></script>
 
 <body>
   <!-- Layout of Search Engine -->
@@ -32,7 +32,7 @@
       <div class="col-lg-12" style="background-color: white">
         <div class='search_bar'>
           <button type="button" class="btn btn-info">Prices</button>
-          <button type="button" class="btn btn-info">Default</button>
+          <button type="button" class="btn btn-info" id="pop-btn">Population</button>
           <button type="button" class="btn btn-info">Default</button>
           <button type="button" class="btn btn-info">Default</button>
         </div>
@@ -40,10 +40,6 @@
     </div>
     <!-- History and Map -->
     <div class="row">
-      <!-- Left Column -->
-      <!-- <div class="col-lg-3" style="background-color: blue">
-        Hello World
-      </div> -->
       <div class="col-lg-12">
             <div id="mapid"></div>
       </div>
@@ -55,8 +51,6 @@
 
 let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4MndwZDJvcGhpNjF2In0.LgHQ5McMsqeSciorxS-RBw'
 let geojsonFeature, censusData, zillowData;
-let geoJson;
-// To hold leaflet's default geoJSON container
 
 d3.queue()
 .defer(d3.csv, "./data/census_data.csv")
@@ -77,6 +71,8 @@ d3.queue()
     row.properties.census = (result[0] !== undefined) ? result[0] : null;
   })
 
+  // parse data to their appropriate datatype
+
   // lay out base map layout
   let map = L.map('mapid').setView([40.4406, -79.9959], 13);
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -88,85 +84,14 @@ d3.queue()
       accessToken: mapboxAccessToken
   }).addTo(map);
 
-  /*Custom INfo COntrol on the side*/
-  let info = L.control();
-  info.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'info'); //create a div with a class "info"
-    this.update();
-    return this._div;
-  }
-
-  // a function to update the control based on feature properties
-  info.update = function(props) {
-    this._div.innerHTML = '<h4>Population Density in this region</h4>' + (
-      props ? '<b>' + props.census.total_pop + '</b>' : 'Hover over a place');
-  };
-
-  info.addTo(map);
-
-  /* Zooming on click feature */
-  let highlightFeature = function(e) {
-    let layer = e.target;
-    layer.setStyle({
-      weight: 5,
-      color: '#666',
-      dashArray: '',
-      fillOpacity: 0.7
+  d3.select("#pop-btn")
+    .on("click", function() {
+      console.log("clicked!");
+      showPopMapLayer(geojsonFeature, map);
+      // TODO: Include a remove_dots function
+      // need to call show_houses again so dots are on top of map
+      show_houses(zillowData, map);
     });
-    info.update(layer.feature.properties);
-  }
-
-  let resetHighlight = function(e) {
-    geoJson.resetStyle(e.target); //geoJson has to be declared first
-    info.update();
-  }
-
-  let zoomToFeature = function(e) {
-    map.fitBounds(e.target.getBounds()); //map has to be declared first
-  }
-
-  let onEachFeature = function(feature, layer) {
-    layer.on({
-      mouseover: highlightFeature,
-      mouseout: resetHighlight,
-      click: zoomToFeature
-    });
-  }
-
-  /*Population choropleth*/
-  let populationExtent = d3.extent(geojsonFeature.features, function(d) {
-      if (d.properties.census) {
-          return Number(d.properties.census.total_pop)
-      }
-  })
-
-  let populationColorScheme = function(d) {
-      return d > 10000 ? '#800026' :
-             d > 5000  ? '#BD0026' :
-             d > 2000  ? '#E31A1C' :
-             d > 1000  ? '#FC4E2A' :
-             d > 500   ? '#FD8D3C' :
-             d > 200   ? '#FEB24C' :
-             d > 100   ? '#FED976' :
-                        '#FFEDA0';
-    }
-
-  let populationMapLayer = function(feature) {
-    return {
-        fillColor: populationColorScheme((feature.properties.census !== null) ? Number(feature.properties.census.total_pop) : 0),
-        weight: 1,
-        opacity: 0.5,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.4
-    };
-  }
-
-  // add allegheny county census tract boundaries
-  geoJson = L.geoJSON(geojsonFeature, {
-    style: populationMapLayer,
-    onEachFeature: onEachFeature
-  }).addTo(map);
 
   show_houses(zillowData, map);
   filter_by_prices(zillowData, 1000);

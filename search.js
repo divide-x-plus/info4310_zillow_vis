@@ -37,12 +37,13 @@ function show_houses(coords, map){
     house.show = true;
     var cMarker = L.circleMarker(
       [Number(house.Latitude), Number(house.Longitude)],
-      {color : "blue",
-       className : "circle_plots",
-       weight : 0,
-       radius : 6,
-       opacity : 0,
-       fillOpacity : 0.9
+      {
+         color : "blue",
+         className : "circle_plots",
+         weight : 0,
+         radius : 6,
+         opacity : 0,
+         fillOpacity : 0.9
       });
       cMarker.on("click", mouse_click_event)
       cMarker.on("mouseout", mouse_out_event)
