@@ -31,6 +31,7 @@ function mouse_click_event(d){
 
 }
 
+//TODO not sure if this function actually works. threw error before.
 function addToFavorite(d) {
   d3.select("#" + d["ZPID"])
   .on("click", function(){
@@ -39,29 +40,31 @@ function addToFavorite(d) {
 }
 
 function show_houses(coords, map){
-  // Add To Favorite function
+  // TODO Add To Favorite function
 
 
   // add markers and tooltips
   coords.forEach(function(house) {
     house.show = true;
     let contents = String(
-      '<button type="button" class="btn"' + 'onclick='+ addToFavorite(house)  +'id="' + house["ZPID"] + '">' +
-      'Add To Favorite</button>' +
       "<b>$" + house["Rent Amount"] + "</b>" + "<br>" +
       house["Bedrooms"] + "bd" + "        "
       + house["Bathroom"] + "ba" + "        "
-      + house["Lot Size (Sq.Ft.)"] + "sqft"
+      + house["Lot Size (Sq.Ft.)"] + "sqft" + '<br>' +
+      '<button type="button" class="btn btn-info btn-sm">Star</button>'
     )
     var cMarker = L.circleMarker(
       [Number(house.Latitude), Number(house.Longitude)],
       {
-         color : "blue",
+         stroke: "black",
+         // color: "black",
+         fillcolor : "#5577BB",
          className : "circle_plots",
-         weight : 0,
+         weight : 1,
          radius : 6,
          opacity : 0,
-         fillOpacity : 0.9
+         fillOpacity : 0.6,
+         dashArray: 5
       });
     cMarker.on("click", mouse_click_event)
     cMarker.on("mouseout", mouse_out_event)
@@ -76,6 +79,10 @@ function show_houses(coords, map){
 
     cMarker.addTo(map)
     .bindPopup(contents);
+    //chain .openPopup() if want to show one tooltip at onboarding
+
+    // insert persistent tooltip
+    cMarker.bindTooltip(String(house["Rent Amount"]));
 
     // bind data so later we can modify
     d3.selectAll('.circle_plots')
@@ -102,4 +109,11 @@ function filter_by_prices(data,high){
     d.show = Number(d['Rent Amount'])< high;
   });
   return data;
+}
+
+function filter_by_neighborhood(data, neighborhood) {
+  let result = data.filter(function(d) {
+    return d.Neighborhood === neighborhood;
+  })
+  return result;
 }
