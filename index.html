@@ -39,13 +39,14 @@
     <!-- Filters -->
     <div class="row">
       <div class='search_bar'>
-        <button type="button" class="btn btn-info">Prices</button>
+        <button type="button" class="btn btn-info" onclick="plot_hist(zillowData)">Prices</button>
         <button type="button" class="btn btn-info" id="pop-btn">Population</button>
         <button type="button" class="btn btn-info">Default</button>
         <button type="button" class="btn btn-info">Default</button>
       </div>
     </div>
     <!-- History and Map -->
+    <div id="hist_price" style="display:none;"></div>
     <div id="mapid"></div>
   </div>
 </body>
@@ -154,6 +155,13 @@ d3.queue()
     let test = selectize.getValue();
     alert(test);
   })
+
+  // hist graph with brush
+  var svg = d3.select('#hist_price')
+  .append('svg')
+  .attr('width', 400)
+  .attr('height', 200)
+  .attr('class', 'svg_price');
 
 }); //end of d3.queue
 
