@@ -37,6 +37,7 @@
     <!-- Filters -->
     <div class="row">
       <div class='search_bar'>
+<<<<<<< HEAD
         <button type="button" class="btn btn-info">Price</button>
         <button type="button" class="btn btn-info">Home type</button>
         <button type="button" class="btn btn-info">Year built</button>
@@ -44,10 +45,14 @@
         <div class="slidecontainer">
           <input type="range" min="1000" max="1900" value="50" class="slider" id="myRange">
         </div>
+=======
+        <button type="button" class="btn btn-info" onclick="plot_hist(zillowData)">Prices</button>
+>>>>>>> 6a3ae6c5895c945d56b76e9a386c8f467c01e77b
         <button type="button" class="btn btn-info" id="pop-btn">Population</button>
       </div>
     </div>
     <!-- History and Map -->
+    <div id="hist_price" style="display:none;"></div>
     <div id="mapid"></div>
   </div>
 </body>
@@ -155,6 +160,24 @@ d3.queue()
     }
   });
 
+<<<<<<< HEAD
 });
+=======
+  let selectizeControl = $select[0].selectize
+
+  selectizeControl.on('change', function() {
+    let test = selectize.getValue();
+    alert(test);
+  })
+
+  // hist graph with brush
+  var svg = d3.select('#hist_price')
+  .append('svg')
+  .attr('width', 400)
+  .attr('height', 200)
+  .attr('class', 'svg_price');
+
+}); //end of d3.queue
+>>>>>>> 6a3ae6c5895c945d56b76e9a386c8f467c01e77b
 
 </script>
