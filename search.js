@@ -1,4 +1,4 @@
-var houseIcon = L.icon({
+let houseIcon = L.icon({
     iconUrl: './imgs/home.png',
     iconSize:     [25, 25], // size of the icon
     iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
@@ -118,7 +118,6 @@ function filter_by_neighborhood(data, neighborhood) {
   return result;
 }
 
-<<<<<<< HEAD
 function filter_by_home_type(data, home_type) {
   let result = data.filter(function(d) {
     return d["Property Type"] === String(home_type);
@@ -130,7 +129,8 @@ function filter_by_year_built(data, year_built) {
   let result = data.filter(function(d) {
     return d["Year Built"] === Number(year_built)
   })
-=======
+
+
 function plot_hist(data){
   var PADDING = 20;
   // show div
@@ -201,5 +201,4 @@ function plot_hist(data){
   .on('click', function(d){
     document.getElementById('hist_price').style.display = "none";
   });
->>>>>>> 6a3ae6c5895c945d56b76e9a386c8f467c01e77b
 }
