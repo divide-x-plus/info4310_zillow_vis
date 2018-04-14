@@ -24,25 +24,27 @@
   <div class="container-fluid">
     <!-- Search Bar Area -->
     <div class="control-group">
-      <form>
+      <!-- <form> -->
         <label for="select-neighborhood">Neighborhood:</label>
         <select id="select-neighborhood" placeholder="Select a neighborhood..." name="neighborhood">
           <option value="">Select a neighborhood...</option>
           <option value="1">Arlington</option>
           <option value="2">Avalon</option>
         </select>
-        <div style="margin-top:20px">
-          <button type="submit">Search</button>
-        </div>
-      </form>
+        <button type="submit">Search</button>
+      <!-- </form> -->
     </div>
     <!-- Filters -->
     <div class="row">
       <div class='search_bar'>
-        <button type="button" class="btn btn-info">Prices</button>
+        <button type="button" class="btn btn-info">Price</button>
+        <button type="button" class="btn btn-info">Home type</button>
+        <button type="button" class="btn btn-info">Year built</button>
+        <button type="button" class="btn btn-info">More Filters</button>
+        <div class="slidecontainer">
+          <input type="range" min="1000" max="1900" value="50" class="slider" id="myRange">
+        </div>
         <button type="button" class="btn btn-info" id="pop-btn">Population</button>
-        <button type="button" class="btn btn-info">Default</button>
-        <button type="button" class="btn btn-info">Default</button>
       </div>
     </div>
     <!-- History and Map -->
@@ -63,7 +65,12 @@ d3.queue()
   if (error) throw error;
   censusData = f1;
   geojsonFeature = f2; //geoJSON.features contain polygons
-  zillowData = f3;
+  zillowData = f3.filter(function(d) {
+    return +d["Rent Amount"] > 1000;
+  });
+
+  // TODO to remove this after testing
+
 
   // parse data to their appropriate datatype before data join
   // censusData.forEach(function(e) {
@@ -141,20 +148,13 @@ d3.queue()
 
   // selectize implementation
   let $select = $('#select-neighborhood').selectize({
-    // create: true,
     sortField: {
       field: 'text',
-      direction: 'asc'
+      direction: 'asc',
+      dropdownParent: 'body'
     }
   });
 
-  let selectizeControl = $select[0].selectize
-
-  selectizeControl.on('change', function() {
-    let test = selectize.getValue();
-    alert(test);
-  })
-
-}); //end of d3.queue
+});
 
 </script>

@@ -82,7 +82,7 @@ function show_houses(coords, map){
     //chain .openPopup() if want to show one tooltip at onboarding
 
     // insert persistent tooltip
-    cMarker.bindTooltip(String(house["Rent Amount"]));
+    cMarker.bindTooltip(String(house["Rent Amount"])).openTooltip();
 
     // bind data so later we can modify
     d3.selectAll('.circle_plots')
@@ -113,7 +113,20 @@ function filter_by_prices(data,high){
 
 function filter_by_neighborhood(data, neighborhood) {
   let result = data.filter(function(d) {
-    return d.Neighborhood === neighborhood;
+    return d.Neighborhood === String(neighborhood);
   })
   return result;
+}
+
+function filter_by_home_type(data, home_type) {
+  let result = data.filter(function(d) {
+    return d["Property Type"] === String(home_type);
+  })
+  return result;
+}
+
+function filter_by_year_built(data, year_built) {
+  let result = data.filter(function(d) {
+    return d["Year Built"] === Number(year_built)
+  })
 }
