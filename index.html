@@ -2,6 +2,9 @@
 <title>ExploRentals</title>
 
 <head>
+  <!-- Metadata -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <!-- Import Style Sheets -->
   <link rel="stylesheet" href="style/leaflet.css"/>
   <link rel="stylesheet" href="style/bootstrap.css"/>
@@ -11,8 +14,6 @@
   <script src="library/leaflet.js"></script>
   <script src="library/d3.js"></script>
   <script src="library/jquery.js"></script>
-  <script src="library/jquery-ui.js"></script>
-  <script src="library/selectize.js"></script>
 
   <!-- Custom Scripts -->
   <script src="layers.js"></script>
@@ -20,41 +21,46 @@
 </head>
 
 <body>
-  <!-- Layout of Search Engine -->
-  <div class="container-fluid">
-    <!-- Search Bar Area -->
-    <div class="control-group">
-      <!-- <form> -->
-        <label for="select-neighborhood">Neighborhood:</label>
-        <select id="select-neighborhood" placeholder="Select a neighborhood..." name="neighborhood">
-          <option value="">Select a neighborhood...</option>
-          <option value="1">Arlington</option>
-          <option value="2">Avalon</option>
-        </select>
-        <button type="submit">Search</button>
-      <!-- </form> -->
-    </div>
-    <!-- Filters -->
-    <div class="row">
-      <div class='search_bar'>
-<<<<<<< HEAD
-        <button type="button" class="btn btn-info">Price</button>
-        <button type="button" class="btn btn-info">Home type</button>
-        <button type="button" class="btn btn-info">Year built</button>
-        <button type="button" class="btn btn-info">More Filters</button>
-        <div class="slidecontainer">
-          <input type="range" min="1000" max="1900" value="50" class="slider" id="myRange">
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="container-fluid">
+        <img src="zillow_image.png" alt="Zillow Logo">
+        <!-- Search Bar Area -->
+        <div class="form-group">
+          <select class="form-control" id="dropDownId">
+            <option value="value1">Arlington</option>
+            <option value="value2">Value2</option>
+            <option value="value3">Value3</option>
+            <!-- continue to add neighborhood options -->
+          </select>
         </div>
-=======
-        <button type="button" class="btn btn-info" onclick="plot_hist(zillowData)">Prices</button>
->>>>>>> 6a3ae6c5895c945d56b76e9a386c8f467c01e77b
+
+        <!-- Filters -->
+        <div class="row">
+          <div class='search_bar'>
+            <button type="button" class="btn btn-info">Price</button>
+            <button type="button" class="btn btn-info">Home type</button>
+            <button type="button" class="btn btn-info">Year built</button>
+            <button type="button" class="btn btn-info">More Filters</button>
+          </div>
+        </div>
+
+        <!-- History and Map -->
+        <div id="hist_price" style="display:none;"></div>
+        <div id="mapid"></div>
+
+      </div> <!-- end of fluid container -->
+    </div>
+    <div class="col-lg-4">
+      <div style="background-color: black">
         <button type="button" class="btn btn-info" id="pop-btn">Population</button>
       </div>
     </div>
-    <!-- History and Map -->
-    <div id="hist_price" style="display:none;"></div>
-    <div id="mapid"></div>
+
   </div>
+
+
 </body>
 
 <script>
@@ -73,9 +79,6 @@ d3.queue()
   zillowData = f3.filter(function(d) {
     return +d["Rent Amount"] > 1000;
   });
-
-  // TODO to remove this after testing
-
 
   // parse data to their appropriate datatype before data join
   // censusData.forEach(function(e) {
@@ -131,6 +134,7 @@ d3.queue()
 
   // lay out base map layout
   let map = L.map('mapid').setView([40.4406, -79.9959], 12);
+
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
       maxZoom: 15,
@@ -142,8 +146,11 @@ d3.queue()
 
   d3.select("#pop-btn")
     .on("click", function() {
+      // remove dots and existing map layers to avoid overlaps
+      d3.selectAll('.circle_plots')
+      .remove();
+
       showPopMapLayer(geojsonFeature, map);
-      // TODO: Include a remove_dots function
       // need to call show_houses again so dots are on top of map
       show_houses(zillowData, map);
     });
@@ -151,21 +158,6 @@ d3.queue()
   show_houses(zillowData, map);
   filter_by_prices(zillowData, 1000);
 
-  // selectize implementation
-  let $select = $('#select-neighborhood').selectize({
-    sortField: {
-      field: 'text',
-      direction: 'asc',
-      dropdownParent: 'body'
-    }
-  });
-
-  let selectizeControl = $select[0].selectize
-
-  selectizeControl.on('change', function() {
-    let test = selectize.getValue();
-    alert(test);
-  })
 
   // hist graph with brush
   var svg = d3.select('#hist_price')

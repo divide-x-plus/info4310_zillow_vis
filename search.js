@@ -1,9 +1,9 @@
-let houseIcon = L.icon({
-    iconUrl: './imgs/home.png',
-    iconSize:     [25, 25], // size of the icon
-    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor:  [-12, -76] // point from which the popup should open relative to the iconAnchor
-});
+// var houseIcon = L.icon({
+//     iconUrl: './imgs/home.png',
+//     iconSize:     [25, 25], // size of the icon
+//     iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+//     popupAnchor:  [-12, -76] // point from which the popup should open relative to the iconAnchor
+// })
 
 function mouse_over_event(d){
   // d.target.setRadius(15);
@@ -15,7 +15,9 @@ function mouse_over_event(d){
 
   d3.selectAll('.circle_plots')
   .enter()
-  .attr('fill', function(d){console.log(d)});
+  .attr('fill', function(d){
+    console.log(d)
+  });
 }
 
 function mouse_out_event(d){
@@ -28,7 +30,6 @@ function mouse_click_event(d){
   .transition()
   .duration(500)
   .attr('fill-opacity', 1);
-
 }
 
 //TODO not sure if this function actually works. threw error before.
@@ -41,7 +42,6 @@ function addToFavorite(d) {
 
 function show_houses(coords, map){
   // TODO Add To Favorite function
-
 
   // add markers and tooltips
   coords.forEach(function(house) {
@@ -81,13 +81,9 @@ function show_houses(coords, map){
     .bindPopup(contents);
     //chain .openPopup() if want to show one tooltip at onboarding
 
-    // insert persistent tooltip
-    cMarker.bindTooltip(String(house["Rent Amount"])).openTooltip();
-
     // bind data so later we can modify
     d3.selectAll('.circle_plots')
     .data(coords)
-    // .on("click", mouse_click_event);
   })
 }
 
@@ -129,9 +125,9 @@ function filter_by_year_built(data, year_built) {
   let result = data.filter(function(d) {
     return d["Year Built"] === Number(year_built)
   })
+}
 
-
-function plot_hist(data){
+let plot_hist = function(data) {
   var PADDING = 20;
   // show div
   document.getElementById('hist_price').style.display = "block";
