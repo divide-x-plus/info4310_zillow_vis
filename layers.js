@@ -92,4 +92,7 @@ function showMapLayer(feature, map, variable) {
     return div;
   }
   legend.addTo(map);
+
+  // zoom control
+  L.control.zoom({position: 'topleft'}).addTo(map);
 }

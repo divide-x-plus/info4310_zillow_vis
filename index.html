@@ -62,6 +62,7 @@
       <button type="button" class="btn btn-info" id="medianAge">Median Age</button>
       <button type="button" class="btn btn-info" id="medianInc">Median Income</button>
       <button type="button" class="btn btn-info" id="travelTime">Mean Travel Time</button>
+      <button type="button" class="btn btn-info" id="remove">Remove Layer</button>
     </div>
   </div>
 
@@ -265,6 +266,15 @@ d3.queue()
       d3.selectAll('.leaflet-control').remove();
       d3.selectAll('.circle_plots').remove();
       showMapLayer(geojsonFeature, map, "mean_travel_time");
+      show_houses(zillowData, map);
+    })
+
+  d3.select("#remove")
+    .on("click", function(){
+      d3.selectAll('.leaflet-interactive').remove();
+      d3.selectAll('.leaflet-control').remove();
+      d3.selectAll('.circle_plots').remove();
+      L.control.zoom({position: 'topleft'}).addTo(map);
       show_houses(zillowData, map);
     })
 
