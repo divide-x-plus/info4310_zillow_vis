@@ -1,5 +1,6 @@
 function mouse_over_event(d){
-  // d.target.setRadius(15);
+  d.target.setRadius(15);
+  
   d3.selectAll('.circle_plots')
   .transition()
   .duration(1000)
