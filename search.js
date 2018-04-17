@@ -45,11 +45,12 @@ function filter_by_neighborhood(data, neighborhood) {
   return result;
 }
 
-function filter_by_home_type(data, home_type) {
-  let result = data.filter(function(d) {
-    return d["Property Type"] === String(home_type);
-  })
-  return result;
+function filter_by_home_type(data, home_type_lst) {
+  data.forEach(function(d){
+    d.show = (home_type_lst.includes(d['Property Type']));
+    return d;
+  });
+  return data;
 }
 
 function filter_by_year_built(data,low,high){
@@ -316,7 +317,10 @@ let plot_hist_year = function(data, map) {
   });
 }
 
+
+
 let house_style_filter = function(data, map) {
+  let selected = ["SingleFamily", "MultiFamily2To4", "Condominium", "Townhouse"];
   var PADDING = 20;
   var height = 250;
   var width = 450;
@@ -354,12 +358,19 @@ let house_style_filter = function(data, map) {
     var clicked = d3.select(this).attr('fill') == 'steelblue';
     if (clicked){
       d3.select(this).attr('fill', 'white');
-
+      var index = selected.indexOf(house_style_list[i]);
+      if (index > -1) {
+        selected.splice(index, 1);
+      }
     }
     else{
       d3.select(this).attr('fill', 'steelblue');
-      console.log(house_style_list[i]);
+      if (!selected.includes(house_style_list[i])){
+        selected.push(house_style_list[i]);
+      }
     }
+    var res = filter_by_home_type(data, selected);
+    show_search_result(res);
   })
   .on('mouseover', function(){
     d3.select(this).style("cursor", "pointer");
