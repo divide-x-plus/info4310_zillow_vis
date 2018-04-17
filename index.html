@@ -12,8 +12,12 @@
 
   <!-- External Libraries -->
   <script src="library/leaflet.js"></script>
+  <!-- <script src="library/leaflet-sidebar.min.js"></script> -->
   <script src="library/d3.js"></script>
   <script src="library/jquery.js"></script>
+  <script src="library/external.js"></script>
+  <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.2/esri-leaflet.js"></script>
+
 
   <!-- Custom Scripts -->
   <script src="layers.js"></script>
@@ -53,13 +57,66 @@
 
       </div> <!-- end of fluid container -->
     </div>
-    <div class="col-lg-4">
-      <div style="background-color: black">
-        <button type="button" class="btn btn-info" id="pop-btn">Population</button>
+
+    <!-- Filters -->
+    <div class="row">
+      <div class='search_bar'>
+        <button type="button" class="btn btn-info">Price</button>
+        <button type="button" class="btn btn-info">Home type</button>
+        <button type="button" class="btn btn-info">Year built</button>
+        <button type="button" class="btn btn-info">More Filters</button>
       </div>
     </div>
 
+    <!-- History and Map -->
+    <!-- <div id="hist_price" style="display:none;"></div> -->
+
+
+    <!-- Right Sidebar for Local Info and Shopping Cart -->
+    <!-- <div class="col-lg-4">
+      <div style="background-color: black">
+        <button type="button" class="btn btn-info" id="pop-btn">Population</button>
+      </div>
+    </div> -->
+
+  <!-- Separate Map Layer -->
+  <div id="page-content">
+    <section class="main-content">
+      <div class="container-wide">
+        <div style="height: 600px">
+          <!-- Sidebar -->
+          <div id="sidebar" class="sidebar collapsed">
+
+            <!-- Navigation Tab -->
+            <div class="sidebar-tabs">
+              <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-pencil"></i></a></li>
+              </ul>
+              <ul role="tablist"></ul>
+            </div>
+
+            <!-- Tab Panes -->
+            <div class="sidebar-content">
+              <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                  Sidebar
+                  <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+                </h1>
+                <p id="sidebar-text"></p>
+              </div>
+            </div>
+
+          </div> <!-- end of sidebar div -->
+
+          <!-- Map -->
+          <div id="mapid"></div>
+
+        </div> <!-- end of embeded large div -->
+      </div> <!-- end of .container-wide div -->
+    </section>
   </div>
+
+</div>
 
 
 </body>
@@ -67,7 +124,8 @@
 <script>
 
 let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4MndwZDJvcGhpNjF2In0.LgHQ5McMsqeSciorxS-RBw'
-let geojsonFeature, censusData, zillowData, map;
+let geojsonFeature, censusData, zillowData;
+let thisResult, map;
 
 d3.queue()
 .defer(d3.csv, "./data/census_data.csv")
@@ -130,7 +188,69 @@ d3.queue()
     // append census data to geoJSON feature.properties
     row.properties.census = (result[0] !== undefined) ? result[0] : null;
   })
+  let results = []; //store all results from zillowData
 
+  // function to open sidebar and more content when clicking button in popup
+
+  function openSidebar(ID) {
+
+    // TODO: need to change this as we want to stack results?
+    if ($("#sidebar-text").text().length > 0) {
+      $("#sidebar-text").removeText();
+    }
+
+    results.forEach(function(d) {
+
+      if (Number(d.ZPID) === parseInt(ID)) {
+        thisResult = d;
+      }
+    })
+
+    sidebar.open("home");
+
+    let divToAddContent = document.getElementById("home");
+    divToAddContent.innerHTML =
+      "Price:</br>" +
+      thisResult["Rent Amount"];
+  }
+
+  function show_houses(coords, map){
+
+
+    // add markers and tooltips
+    coords.forEach(function(d) {
+      d.show = true;
+
+      let cMarker = L.circleMarker([Number(d.Latitude), Number(d.Longitude)], //latlng
+        {
+          radius: 8,
+          className : "circle_plots",
+          fillColor: "#ff7800",
+          color: "#000",
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.8
+      }); //style
+
+      cMarker.on("click", mouse_click_event)
+      cMarker.on("mouseout", mouse_out_event)
+
+      cMarker.addTo(map)
+      .bindPopup(
+        '<strong>$'+ d["Rent Amount"] + '</strong>'+
+        '<br/><button type="button" class="btn btn-primary sidebar-open-button" data="' +
+        d.ZPID +
+        '"' +
+        ">Add to Cart</button>"
+      );
+      results.push(d);
+      return cMarker;
+    })
+
+    // bind data so later we can modify
+    d3.selectAll('.circle_plots')
+    .data(coords)
+  }
 
 
   // lay out base map layout
@@ -144,6 +264,20 @@ d3.queue()
       id: 'mapbox.streets',
       accessToken: mapboxAccessToken
   }).addTo(map);
+
+
+
+  // link event handler to handle sidebar activation
+  $("div").on("click", ".sidebar-open-button", function() {
+    let ID = $(this).attr("data");
+    openSidebar(ID);
+  });
+
+
+  // add sidebar control panel to map
+  let sidebar = L.control.sidebar("sidebar", {position: "right"});
+  map.addControl(sidebar); //used an imported slightly modified leaflet library
+
 
   d3.select("#pop-btn")
     .on("click", function() {

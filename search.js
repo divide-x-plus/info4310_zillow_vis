@@ -1,10 +1,3 @@
-// var houseIcon = L.icon({
-//     iconUrl: './imgs/home.png',
-//     iconSize:     [25, 25], // size of the icon
-//     iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-//     popupAnchor:  [-12, -76] // point from which the popup should open relative to the iconAnchor
-// })
-
 function mouse_over_event(d){
   // d.target.setRadius(15);
   d3.selectAll('.circle_plots')
@@ -13,11 +6,11 @@ function mouse_over_event(d){
   .attr('fill', 'blue')
   .attr('stroke-opacity', 0);
 
-  d3.selectAll('.circle_plots')
-  .enter()
-  .attr('fill', function(d){
-    console.log(d)
-  });
+  // d3.selectAll('.circle_plots')
+  // .enter()
+  // .attr('fill', function(d){
+  //   console.log(d)
+  // });
 }
 
 function mouse_out_event(d){
@@ -32,60 +25,69 @@ function mouse_click_event(d){
   .attr('fill-opacity', 1);
 }
 
-//TODO not sure if this function actually works. threw error before.
-function addToFavorite(d) {
-  d3.select("#" + d["ZPID"])
-  .on("click", function(){
-    console.log(d["ZPID"]);
-  })
-}
+// let results = []; //store all results from zillowData
 
-function show_houses(coords, map){
-  // TODO Add To Favorite function
+// function to open sidebar and more content when clicking button in popup
+// var thisResult;
+// function openSidebar(ID) {
+//   // TODO: need to change this as we want to stack results?
+//   if ($("#sidebar-text").text().length > 0) {
+//     $("#sidebar-text").removeText();
+//   }
+//
+//   zillowData.forEach(function(d) {
+//     if (d.ZPID === parseInt(ID)) {
+//       thisResult = d;
+//     }
+//   })
+//   sidebar.open("home");
+//
+//   let divToAddContent = document.getElementById("home");
+//   divToAddContent.innerHTML =
+//     "Price:</br>" +
+//     thisResult["Rent Amount"];
+// }
+//
+// function show_houses(coords, map){
+//
+//
+//   // add markers and tooltips
+//   coords.forEach(function(d) {
+//     d.show = true;
+//
+//     let cMarker = L.circleMarker([Number(d.Latitude), Number(d.Longitude)], //latlng
+//       {
+//         radius: 8,
+//         fillColor: "#ff7800",
+//         color: "#000",
+//         weight: 1,
+//         opacity: 1,
+//         fillOpacity: 0.8
+//     }); //style
+//
+//     cMarker.on("click", mouse_click_event)
+//     cMarker.on("mouseout", mouse_out_event)
+//
+//     cMarker.addTo(map)
+//     .bindPopup(
+//       '<strong>$'+ d["Rent Amount"] + '</strong>'+
+//       '<br/><button type="button" class="btn btn-primary sidebar-open-button" data="' +
+//       d.ZPID +
+//       '"' +
+//       ">Add to Cart</button>"
+//     );
+//     // results.push(coords);
+//     // return cMarker;
+//   })
+//
+//   // bind data so later we can modify
+//   d3.selectAll('.circle_plots')
+//   .data(coords)
+// }
 
-  // add markers and tooltips
-  coords.forEach(function(house) {
-    house.show = true;
-    let contents = String(
-      "<b>$" + house["Rent Amount"] + "</b>" + "<br>" +
-      house["Bedrooms"] + "bd" + "        "
-      + house["Bathroom"] + "ba" + "        "
-      + house["Lot Size (Sq.Ft.)"] + "sqft" + '<br>' +
-      '<button type="button" class="btn btn-info btn-sm">Star</button>'
-    )
-    var cMarker = L.circleMarker(
-      [Number(house.Latitude), Number(house.Longitude)],
-      {
-         stroke: "black",
-         // color: "black",
-         fillcolor : "#5577BB",
-         className : "circle_plots",
-         weight : 1,
-         radius : 6,
-         opacity : 0,
-         fillOpacity : 0.6,
-         dashArray: 5
-      });
-    cMarker.on("click", mouse_click_event)
-    cMarker.on("mouseout", mouse_out_event)
 
-    // map.on("zoomend", function(){
-    //   if (map.getZoom() < 10) {
-    //     cMarker.addTo(map).bindPopup(contents);
-    //   } else {
-    //     cMarker.addTo(map).bindPopup("something");
-    //   }
-    // })
 
-    cMarker.addTo(map)
-    .bindPopup(contents);
-    //chain .openPopup() if want to show one tooltip at onboarding
 
-    // bind data so later we can modify
-    d3.selectAll('.circle_plots')
-    .data(coords)
-  })
-}
 
 function show_search_result(res){
   var plots = d3.selectAll('.circle_plots').data(res);
@@ -96,7 +98,7 @@ function show_search_result(res){
     return d.show ? 0.9 : 0.4;
   })
   .attr('fill', function(d){
-    return d.show ? 'blue' : 'grey';
+    return d.show ? '#ff7800' : 'grey';
   });
 }
 
