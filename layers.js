@@ -15,11 +15,12 @@ function showMapLayer(feature, map, variable) {
     return (d.properties.census !== null) ? Number(d.properties.census[variable]) : 0;
   })
 
-  let colors = ["#ffc6c4",
-            "#ee919b",
-            "#cc607d",
-            "#9e3963",
-            "#672044"];
+  let colors = ["#f6d2a9",
+            "#f4b28a",
+            "#ef9177",
+            "#e3726d",
+            "#cf5669",
+            "#b13f64"];
 
   let colorize = d3.scaleOrdinal().domain(dataRange).range(colors);
 
