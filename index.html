@@ -29,44 +29,39 @@
 
 
 <div class="container-fluid">
-  <!-- <div class="row">
-    <div class="col-sm-2">
-      <img src="zillow_image.png" alt="Zillow Logo" style="width: 40px; height: 40px">
-    </div>
-    <div class="col-sm-8"> -->
-      <!-- Search Bar Area -->
-      <div class="form-group">
-        <select class="form-control" id="dropDownId"></select>
+  <h1>ExploRentals</h1>
+  <!-- Dropdown for selecting neighborhood -->
+  <div class="form-group">
+    <span><strong>Select Neighborhood: </strong></span>
+    <select class="form-control" id="dropDownId"></select>
+  </div>
+
+  <div class="container-fluid">
+    <!-- Filters -->
+    <div class="row">
+      <div class='search_bar'>
+        <button type="button" class="btn btn-info" onclick="plot_hist(zillowData, map)">Price</button>
+        <button type="button" class="btn btn-info" onclick="house_style_filter(zillowData, map)">Home type</button>
+        <button type="button" class="btn btn-info" onclick="plot_hist_year(zillowData, map)">Year built</button>
       </div>
-    <!-- </div> -->
-
-
-
-  <!-- Filters -->
-  <div class="row">
-    <div class='search_bar'>
-      <button type="button" class="btn btn-info" onclick="plot_hist(zillowData, map)">Price</button>
-      <button type="button" class="btn btn-info" onclick="house_style_filter(zillowData, map)">Home type</button>
-      <button type="button" class="btn btn-info" onclick="plot_hist_year(zillowData, map)">Year built</button>
-      <button type="button" class="btn btn-info">More Filters</button>
     </div>
-  </div>
 
-  <!-- Local Info -->
-  <div class="row">
-    <div class="localInfo">
-      <button type="button" class="btn btn-info" id="popInfo">Population</button>
-      <button type="button" class="btn btn-info" id="genderRatio">Gender Ratio</button>
-      <button type="button" class="btn btn-info" id="medianAge">Median Age</button>
-      <button type="button" class="btn btn-info" id="medianInc">Median Income</button>
-      <button type="button" class="btn btn-info" id="travelTime">Mean Travel Time</button>
-      <button type="button" class="btn btn-info" id="remove">Remove Layer</button>
+
+    <!-- Local Info -->
+    <div class="row">
+      <div class="localInfo">
+        <button type="button" class="btn btn-info" id="popInfo">Population Density</button>
+        <button type="button" class="btn btn-info" id="genderRatio">Gender Ratio</button>
+        <button type="button" class="btn btn-info" id="medianAge">Age</button>
+        <button type="button" class="btn btn-info" id="medianInc">Income</button>
+        <button type="button" class="btn btn-info" id="travelTime">Commute Time</button>
+        <button type="button" class="btn btn-info" id="remove">Remove Layer</button>
+      </div>
     </div>
   </div>
 
   <div class="row">
-    <div id="search_criteria">
-    </div>
+    <div id="search_criteria"></div>
   </div>
 
   <!-- History and Map -->
@@ -110,8 +105,7 @@
 let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4MndwZDJvcGhpNjF2In0.LgHQ5McMsqeSciorxS-RBw'
 let geojsonFeature, censusData, zillowData;
 let thisResult, map;
-
- // for removing heatmap layer
+var res; // store the state of data
 
 d3.queue()
 .defer(d3.csv, "./data/canonical_census_data.csv")
@@ -243,6 +237,9 @@ d3.queue()
   let sidebar = L.control.sidebar("sidebar", {position: "right"});
   map.addControl(sidebar); //used an imported slightly modified leaflet library
 
+  res = filter_by_prices(zillowData, 1000, 1500);
+  show_houses(res, map);
+
   // attach event handler to population local info
   d3.select("#popInfo")
     .on("click", function() {
@@ -253,7 +250,7 @@ d3.queue()
 
       showMapLayer(geojsonFeature, map, "total_pop");
 
-      show_houses(zillowData, map);
+      show_houses(res, map);
     });
 
   // attach event handler to gender ratio local info
@@ -264,7 +261,7 @@ d3.queue()
       d3.selectAll('.circle_plots').remove();
 
       showMapLayer(geojsonFeature, map, "male_female_ratio");
-      show_houses(zillowData, map);
+      show_houses(res, map);
     })
 
   // attach event handler to median age local info
@@ -274,7 +271,7 @@ d3.queue()
       d3.selectAll('.leaflet-control').remove();
       d3.selectAll('.circle_plots').remove();
       showMapLayer(geojsonFeature, map, "median_age");
-      show_houses(zillowData, map);
+      show_houses(res, map);
     })
 
   // attach event handler to median income local info
@@ -284,7 +281,7 @@ d3.queue()
       d3.selectAll('.leaflet-control').remove();
       d3.selectAll('.circle_plots').remove();
       showMapLayer(geojsonFeature, map, "median_income");
-      show_houses(zillowData, map);
+      show_houses(res, map);
     })
 
   // attach event handler to median income local info
@@ -294,7 +291,7 @@ d3.queue()
       d3.selectAll('.leaflet-control').remove();
       d3.selectAll('.circle_plots').remove();
       showMapLayer(geojsonFeature, map, "mean_travel_time");
-      show_houses(zillowData, map);
+      show_houses(res, map);
     })
 
   d3.select("#remove")
@@ -303,11 +300,8 @@ d3.queue()
       d3.selectAll('.leaflet-control').remove();
       d3.selectAll('.circle_plots').remove();
       L.control.zoom({position: 'topleft'}).addTo(map);
-      show_houses(zillowData, map);
+      show_houses(res, map);
     })
-
-  var res = filter_by_prices(zillowData, 1000, 1500);
-  show_houses(res, map);
 
   // neighborhood dropdown selection
   $(function(){
@@ -318,29 +312,30 @@ d3.queue()
         show_houses(temp, map);
       })
   });
-  // price histogram with brush filter
-  var res = d3.select('#search_criteria')
+
+  // display current search criteria
+  var display_criteria = d3.select('#search_criteria')
   .append('svg')
   .attr('width', 1200)
   .attr('height', 50)
   .attr('transform', 'translate(0,10)')
   .style('background-color', '#fff');
 
-  res.append('text')
+  display_criteria.append('text')
   .text('Price: $' + filter_criteria.low_price + ' - $' + filter_criteria.high_price)
   .attr('x', 0)
   .attr('y', 25)
   .attr('class', 'price_filter');
 
 
-  res.append('text')
+  display_criteria.append('text')
   .text('Year: ' + filter_criteria.low_year + ' - ' + filter_criteria.high_year)
   .attr('x', 300)
   .attr('y', 25)
   .attr('class', 'year_filter');
 
 
-  res.append('text')
+  display_criteria.append('text')
   .text('House Type: ' + filter_criteria.type.join(', '))
   .attr('x', 600)
   .attr('y', 25)

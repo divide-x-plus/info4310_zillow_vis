@@ -1,7 +1,8 @@
 // helper function to return a certain level of precision
 function precisionRound(number, precision) {
   var factor = Math.pow(10, precision);
-  return Math.round(number * factor) / factor;
+  var tempVal = Math.round(number * factor) / factor
+  return tempVal;
 }
 
 // show population local information
@@ -15,12 +16,7 @@ function showMapLayer(feature, map, variable) {
     return (d.properties.census !== null) ? Number(d.properties.census[variable]) : 0;
   })
 
-  let colors = ["#f6d2a9",
-            "#f4b28a",
-            "#ef9177",
-            "#e3726d",
-            "#cf5669",
-            "#b13f64"];
+  let colors = ['#fef0d9', '#fdcc8a','#fc8d59','#e34a33','#b30000'];
 
   let colorize = d3.scaleOrdinal().domain(dataRange).range(colors);
 
@@ -69,6 +65,40 @@ function showMapLayer(feature, map, variable) {
     style: populationMapLayer,
     onEachFeature: onEachFeature
   }).addTo(map);
+
+  // add heatmap info on the top right of map
+  var info = L.control();
+
+  info.onAdd = function (map) {
+      this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+      this.update();
+      return this._div;
+  };
+
+  // method that we will use to update the control based on feature properties passed
+  info.update = function (props) {
+    // access census data by props.census
+    if (variable === "total_pop") {
+
+      this._div.innerHTML = '<h4>Population Density</h4>' +  (props !== undefined ?
+          '<b>' + props.census[variable] + ' people</b>' : 'Missing data');
+    } else if (variable === "male_female_ratio") {
+
+      this._div.innerHTML = '<h4>Gender Ratio</h4><br/>' + 'Male to Female Population Ratio<br/>' +  (props !== undefined ? '<b>' + props.census[variable] + '</b>' : 'Missing data');
+    } else if (variable === "median_age") {
+      this._div.innerHTML = '<h4>Age Distribution</h4>' +  (props !== undefined ?
+          '<b>' + props.census[variable] + '</b>' : 'Missing data');
+    } else if (variable === "median_income") {
+      this._div.innerHTML = '<h4>Median Income Distribution</h4>' +  (props !== undefined ?
+          '<b>$' + props.census[variable] + ' per year</b>' : 'Missing data');
+    } else if (variable === "mean_travel_time") {
+      this._div.innerHTML = '<h4>Mean Commute Time</h4>' +  (props !== undefined ?
+          '<b>' + props.census[variable] + ' min</b>' : 'Missing data');
+    }
+
+  };
+
+  info.addTo(map);
 
   // helper function to divide an array into equal parts
   // @params: array to divide, num of parts
