@@ -138,8 +138,14 @@ let plot_hist = function(data, map) {
   var height = 150;
   var width = 350;
   // show div
+
+  document.getElementById('hist_year').style.display = "none";
+  d3.select('.svg_year').select('.content').remove();
+
   document.getElementById('hist_price').style.display = "block";
   d3.select('#hist_price').select('.content').remove();
+
+
 
   var g = d3.select('.svg_price')
   .append('g')
@@ -280,8 +286,14 @@ let plot_hist_year = function(data, map) {
   var height = 150;
   var width = 350;
   // show div
+
+  document.getElementById('hist_price').style.display = "none";
+  d3.select('#hist_price').select('.content').remove();
+
   document.getElementById('hist_year').style.display = "block";
   d3.select('.svg_year').select('.content').remove();
+
+
 
   var g = d3.select('.svg_year')
   .append('g')
@@ -327,7 +339,7 @@ let plot_hist_year = function(data, map) {
       .attr("fill", "steelblue");
 
     var brush = d3.brushX()
-        .extent([[PADDING, PADDING], [width-PADDING, height-PADDING]])
+        .extent([[PADDING, PADDING], [width-2*PADDING, height-PADDING]])
         .on("brush end", brushed);
 
     function brushed() {
