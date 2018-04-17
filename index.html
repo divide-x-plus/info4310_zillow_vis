@@ -105,6 +105,8 @@ let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4Mndw
 let geojsonFeature, censusData, zillowData;
 let thisResult, map;
 
+ // for removing heatmap layer
+
 d3.queue()
 .defer(d3.csv, "./data/canonical_census_data.csv")
 .defer(d3.json,"./data/allegheny_county_census_tracts_2016.geojson")
@@ -212,17 +214,59 @@ d3.queue()
   let sidebar = L.control.sidebar("sidebar", {position: "right"});
   map.addControl(sidebar); //used an imported slightly modified leaflet library
 
-
+  // attach event handler to population local info
   d3.select("#popInfo")
     .on("click", function() {
       // remove dots and existing map layers to avoid overlaps
-      d3.selectAll('.circle_plots')
-      .remove();
+      d3.selectAll('.leaflet-interactive').remove();
+      d3.selectAll('.leaflet-control').remove();
+      d3.selectAll('.circle_plots').remove();
 
       showMapLayer(geojsonFeature, map, "total_pop");
 
       show_houses(zillowData, map);
     });
+
+  // attach event handler to gender ratio local info
+  d3.select("#genderRatio")
+    .on("click", function() {
+      d3.selectAll('.leaflet-interactive').remove();
+      d3.selectAll('.leaflet-control').remove();
+      d3.selectAll('.circle_plots').remove();
+
+      showMapLayer(geojsonFeature, map, "male_female_ratio");
+      show_houses(zillowData, map);
+    })
+
+  // attach event handler to median age local info
+  d3.select("#medianAge")
+    .on("click", function() {
+      d3.selectAll('.leaflet-interactive').remove();
+      d3.selectAll('.leaflet-control').remove();
+      d3.selectAll('.circle_plots').remove();
+      showMapLayer(geojsonFeature, map, "median_age");
+      show_houses(zillowData, map);
+    })
+
+  // attach event handler to median income local info
+  d3.select("#medianInc")
+    .on("click", function() {
+      d3.selectAll('.leaflet-interactive').remove();
+      d3.selectAll('.leaflet-control').remove();
+      d3.selectAll('.circle_plots').remove();
+      showMapLayer(geojsonFeature, map, "median_income");
+      show_houses(zillowData, map);
+    })
+
+  // attach event handler to median income local info
+  d3.select("#travelTime")
+    .on("click", function() {
+      d3.selectAll('.leaflet-interactive').remove();
+      d3.selectAll('.leaflet-control').remove();
+      d3.selectAll('.circle_plots').remove();
+      showMapLayer(geojsonFeature, map, "mean_travel_time");
+      show_houses(zillowData, map);
+    })
 
   var res = filter_by_prices(zillowData, 1000, 1500);
   show_houses(res, map);
