@@ -9,17 +9,12 @@ function mouse_over_event(d){
 }
 
 function mouse_out_event(d){
-  d.target.setRadius(6);
+  d.target.setRadius(8);
 }
 
-function mouse_click_event(d){
+function mouse_over_event(d){
   d.target.setRadius(15);
-  d3.select(this)
-  .transition()
-  .duration(500)
-  .attr('fill-opacity', 1);
 }
-
 
 function show_search_result(res){
   var plots = d3.selectAll('.circle_plots').data(res);
@@ -70,13 +65,14 @@ let plot_hist = function(data, map) {
   var height = 250;
   var width = 450;
   // show div
+  document.getElementById('house_style').style.display = "none";
+  d3.select('#house_style').select('.content').remove();
 
   document.getElementById('hist_year').style.display = "none";
   d3.select('.svg_year').select('.content').remove();
 
   document.getElementById('hist_price').style.display = "block";
   d3.select('#hist_price').select('.content').remove();
-
 
 
   var g = d3.select('.svg_price')
@@ -189,28 +185,6 @@ let plot_hist = function(data, map) {
   .on('click', function(d){
     document.getElementById('hist_price').style.display = "none";
   });
-
-  // g.append('text')
-  // .attr('x', width-2*PADDING)
-  // .attr('y', height+PADDING*.8)
-  // .style('text-anchor', 'middle')
-  // .text('Enter')
-  // .attr('font-size', '12px')
-  // .attr('fill', 'black')
-  // .on('mouseover', function(d){
-  //   d3.select(this).style("cursor", "pointer")
-  //   .transition().duration(300)
-  //   .attr('font-size', '15px')
-  //   .attr('fill', 'pink')
-  // })
-  // .on('mouseout', function(d){
-  //   d3.select(this).transition().duration(300)
-  //   .attr('font-size', '12px')
-  //   .attr('fill', 'black')
-  // })
-  // .on('click', function(d){
-  //   document.getElementById('hist_price').style.display = "none";
-  // });
 }
 
 let plot_hist_year = function(data, map) {
@@ -218,6 +192,8 @@ let plot_hist_year = function(data, map) {
   var height = 250;
   var width = 450;
   // show div
+  document.getElementById('house_style').style.display = "none";
+  d3.select('#house_style').select('.content').remove();
 
   document.getElementById('hist_price').style.display = "none";
   d3.select('#hist_price').select('.content').remove();
@@ -338,26 +314,87 @@ let plot_hist_year = function(data, map) {
   .on('click', function(d){
     document.getElementById('hist_year').style.display = "none";
   });
+}
 
-  // g.append('text')
-  // .attr('x', width-2*PADDING)
-  // .attr('y', height+PADDING*.8)
-  // .style('text-anchor', 'middle')
-  // .text('Enter')
-  // .attr('font-size', '12px')
-  // .attr('fill', 'black')
-  // .on('mouseover', function(d){
-  //   d3.select(this).style("cursor", "pointer")
-  //   .transition().duration(300)
-  //   .attr('font-size', '15px')
-  //   .attr('fill', 'pink')
-  // })
-  // .on('mouseout', function(d){
-  //   d3.select(this).transition().duration(300)
-  //   .attr('font-size', '12px')
-  //   .attr('fill', 'black')
-  // })
-  // .on('click', function(d){
-  //   document.getElementById('hist_price').style.display = "none";
-  // });
+let house_style_filter = function(data, map) {
+  var PADDING = 20;
+  var height = 250;
+  var width = 450;
+  // show div
+
+  document.getElementById('hist_price').style.display = "none";
+  d3.select('#hist_price').select('.content').remove();
+
+  document.getElementById('hist_year').style.display = "none";
+  d3.select('.svg_year').select('.content').remove();
+
+  document.getElementById('house_style').style.display = "block";
+  d3.select('.svg_style').select('.content').remove();
+
+  var g = d3.select('.svg_style')
+  .append('g')
+  .attr('class', 'content')
+  .attr('transform', 'translate('+PADDING+','+PADDING+')');
+
+  var y = d3.scaleLinear().domain([0,3]).range([height-PADDING, PADDING]);
+
+  var house_style_list = ["SingleFamily", "MultiFamily2To4", "Condominium", "Townhouse"];
+
+  g.selectAll('.clickable_rect')
+  .data([0,1,2,3])
+  .enter()
+  .append('rect')
+  .attr('x', PADDING*6)
+  .attr('y', d=>y(d))
+  .attr('width', 20)
+  .attr('height', 20)
+  .attr('fill', 'steelblue')
+  .attr('stroke', 'steelblue')
+  .on('click', function(d, i){
+    var clicked = d3.select(this).attr('fill') == 'steelblue';
+    if (clicked){
+      d3.select(this).attr('fill', 'white');
+
+    }
+    else{
+      d3.select(this).attr('fill', 'steelblue');
+      console.log(house_style_list[i]);
+    }
+  })
+  .on('mouseover', function(){
+    d3.select(this).style("cursor", "pointer");
+  });
+
+  g.selectAll('.clickable_rect')
+  .data(["Single Family","MultiFamily (2-4)", "Condominium", "Townhouse"])
+  .enter()
+  .append('text')
+  .style('alignment-baseline', 'middle')
+  .attr('x', PADDING*9)
+  .attr('y', (d, i)=>y(i)+10)
+  .text(d=>d);
+
+
+
+  g.append('text')
+  .attr('x', width-2*PADDING)
+  .attr('y', height+PADDING*.8)
+  .style('text-anchor', 'middle')
+  .text('Close')
+  .attr('font-size', '12px')
+  .attr('fill', 'black')
+  .on('mouseover', function(d){
+    d3.select(this).transition().duration(300)
+    .attr('font-size', '15px')
+    .attr('fill', 'pink')
+  })
+  .on('mouseout', function(d){
+    d3.select(this).style("cursor", "pointer")
+    .transition().duration(300)
+    .attr('font-size', '12px')
+    .attr('fill', 'black')
+  })
+  .on('click', function(d){
+    document.getElementById('house_style').style.display = "none";
+  });
 }
