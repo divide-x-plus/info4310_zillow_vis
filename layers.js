@@ -20,9 +20,20 @@ function showMapLayer(feature, map, variable) {
     return (d.properties.census !== null) ? Number(d.properties.census[variable]) : 0;
   })
 
-  let colors = ["#FFEDA0", "#FED976",  "#FEB24C", "#9955a8", "#573b88"];
+  console.log(dataRange);
 
-  let colorize = d3.scaleThreshold().domain(dataRange).range(colors);
+  let colors = ["#7F3C8D",
+            "#11A579",
+            "#3969AC",
+            "#F2B701",
+            "#E73F74",
+            "#80BA5A",
+            "#E68310",
+            "#A5AA99"];
+
+  let colorize = d3.scaleOrdinal().domain(dataRange).range(colors);
+
+  console.log(colorize(100))
 
   let populationMapLayer = function(feature) {
     return {
