@@ -1,6 +1,6 @@
 function mouse_over_event(d){
   d.target.setRadius(15);
-  
+
   d3.selectAll('.circle_plots')
   .transition()
   .duration(1000)
@@ -136,8 +136,8 @@ function filter_by_year_built(data,low,high){
 
 let plot_hist = function(data, map) {
   var PADDING = 20;
-  var height = 150;
-  var width = 350;
+  var height = 250;
+  var width = 450;
   // show div
 
   document.getElementById('hist_year').style.display = "none";
@@ -284,8 +284,8 @@ let plot_hist = function(data, map) {
 
 let plot_hist_year = function(data, map) {
   var PADDING = 20;
-  var height = 150;
-  var width = 350;
+  var height = 250;
+  var width = 450;
   // show div
 
   document.getElementById('hist_price').style.display = "none";
@@ -293,8 +293,6 @@ let plot_hist_year = function(data, map) {
 
   document.getElementById('hist_year').style.display = "block";
   d3.select('.svg_year').select('.content').remove();
-
-
 
   var g = d3.select('.svg_year')
   .append('g')
@@ -307,37 +305,54 @@ let plot_hist_year = function(data, map) {
   .attr('class', 'price_range')
 
   var year = data.map(d=>Number(d['Year Built']));
+  var year_data = {};
+
+  year.forEach(function(y){
+    if (year_data.hasOwnProperty(y)){
+      year_data[y]+=1;
+    }
+    else{
+      year_data[y]=1
+    }
+  });
+
+  var ts_data = [];
+  for (var k in year_data) {
+        if (year_data.hasOwnProperty(k)) {
+           ts_data.push({"year":Number(k), "freq":year_data[k]});
+        }
+  };
+  ts_data.sort(function(a,b){return a.year-b.year});
+
 
   var formatCount = d3.format(",.0f");
 
   var x = d3.scaleLinear()
-    .domain(d3.extent(year))
+    .domain(d3.extent(ts_data, d=>d.year))
     .rangeRound([PADDING, width-2*PADDING]);
 
   var fixed_x = d3.scaleLinear()
-    .domain(d3.extent(year))
+    .domain(d3.extent(ts_data, d=>d.year))
     .rangeRound([PADDING, width-2*PADDING]);
 
-  var bins = d3.histogram()
-      .domain(x.domain())
-      .thresholds(x.ticks(10))
-      (year);
-
   var y = d3.scaleLinear()
-      .domain([0, d3.max(bins, function(d) { return d.length; })])
+      .domain([0, d3.max(ts_data, d=>d.freq)])
       .range([height-PADDING, PADDING]);
 
-  var bar = g.selectAll(".bar")
-    .data(bins)
-    .enter().append("g")
-      .attr("class", "bar")
-      .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; });
+  // define the line
+  var valueline = d3.line()
+      .x(function(d) { return x(d.year); })
+      .y(function(d) { return y(d.freq); })
+      .curve(d3.curveMonotoneX);
 
-  bar.append("rect")
-      .attr("x", 1)
-      .attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
-      .attr("height", function(d) {return height-PADDING-y(d.length); })
-      .attr("fill", "steelblue");
+  // Add the valueline path.
+  g.append("path")
+      .data([ts_data])
+      .attr("class", "line")
+      .attr("d", valueline)
+      .attr("fill", "none")
+      .style('stroke-width', '2px')
+      .style("stroke", "steelblue");
 
     var brush = d3.brushX()
         .extent([[PADDING, PADDING], [width-2*PADDING, height-PADDING]])
@@ -358,24 +373,10 @@ let plot_hist_year = function(data, map) {
       .text(''+low + ' - ' + high)
     }
 
-    g.append("g")
-       .attr("class", "brush")
-       .call(brush)
-       .call(brush.move, x.range());
-
-  bar.append("text")
-      .attr("dy", ".75em")
-      .attr("y", 6)
-      .attr("x", (x(bins[0].x1) - x(bins[0].x0)) / 2)
-      .attr("text-anchor", "middle")
-      .attr("font", "sans-serif")
-      .attr("font-size", "8px")
-      .attr("fill", "#fff")
-      .text(function(d) {
-        if ((d.length) > 20){
-          return formatCount(d.length);
-        }
-      });
+  g.append("g")
+     .attr("class", "brush")
+     .call(brush)
+     .call(brush.move, x.range());
 
   g.append("g")
       .attr("class", "axis axis--x")
