@@ -39,16 +39,17 @@
         <!-- Filters -->
         <div class="row">
           <div class='search_bar'>
-            <button type="button" class="btn btn-info">Price</button>
+            <button type="button" class="btn btn-info" onclick="plot_hist(zillowData, map)">Price</button>
             <button type="button" class="btn btn-info">Home type</button>
-            <button type="button" class="btn btn-info">Year built</button>
+            <button type="button" class="btn btn-info" onclick="plot_hist_year(zillowData, map)">Year built</button>
             <button type="button" class="btn btn-info">More Filters</button>
           </div>
         </div>
 
         <!-- History and Map -->
-        <div id="hist_price" style="display:none;"></div>
-        <div id="mapid"></div>
+        <div id="hist_price" style="display:none; position: absolute; z-index: 10;"></div>
+        <div id="hist_year" style="display:none; position: absolute; z-index: 10;"></div>
+        <div id="mapid" style="z-index: 0;"></div>
 
       </div> <!-- end of fluid container -->
     </div>
@@ -66,7 +67,7 @@
 <script>
 
 let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4MndwZDJvcGhpNjF2In0.LgHQ5McMsqeSciorxS-RBw'
-let geojsonFeature, censusData, zillowData;
+let geojsonFeature, censusData, zillowData, map;
 
 d3.queue()
 .defer(d3.csv, "./data/census_data.csv")
@@ -133,7 +134,7 @@ d3.queue()
 
 
   // lay out base map layout
-  let map = L.map('mapid').setView([40.4406, -79.9959], 12);
+  map = L.map('mapid').setView([40.4406, -79.9959], 12);
 
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -154,9 +155,9 @@ d3.queue()
       // need to call show_houses again so dots are on top of map
       show_houses(zillowData, map);
     });
+  var res = filter_by_prices(zillowData, 1000, 1500);
+  show_houses(res, map);
 
-  show_houses(zillowData, map);
-  filter_by_prices(zillowData, 1000);
 
 
   // hist graph with brush
@@ -164,7 +165,17 @@ d3.queue()
   .append('svg')
   .attr('width', 400)
   .attr('height', 200)
+  .attr('transform', 'translate(100,100)')
+  .style('background-color', '#fff')
   .attr('class', 'svg_price');
+
+  var svg = d3.select('#hist_year')
+  .append('svg')
+  .attr('width', 400)
+  .attr('height', 200)
+  .attr('transform', 'translate(100,100)')
+  .style('background-color', '#fff')
+  .attr('class', 'svg_year');
 
 }); //end of d3.queue
 

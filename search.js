@@ -91,7 +91,7 @@ function show_search_result(res){
   var plots = d3.selectAll('.circle_plots').data(res);
   plots.exit().remove();
   plots.transition()
-  .duration(1000)
+  .duration(500)
   .attr('fill-opacity', function(d){
     return d.show ? 0.9 : 0.4;
   })
@@ -100,9 +100,11 @@ function show_search_result(res){
   });
 }
 
-function filter_by_prices(data,high){
+function filter_by_prices(data,low,high){
+
   data.forEach(function(d){
-    d.show = Number(d['Rent Amount'])< high;
+    d.show = (Number(d['Rent Amount'])<= high && Number(d['Rent Amount']) >= low);
+    return d;
   });
   return data;
 }
@@ -121,30 +123,31 @@ function filter_by_home_type(data, home_type) {
   return result;
 }
 
-function filter_by_year_built(data, year_built) {
-  let result = data.filter(function(d) {
-    return d["Year Built"] === Number(year_built)
-  })
+function filter_by_year_built(data,low,high){
+  data.forEach(function(d){
+    d.show = (Number(d['Year Built'])<= high && Number(d['Year Built']) >= low);
+    return d;
+  });
+  return data;
 }
 
-let plot_hist = function(data) {
+let plot_hist = function(data, map) {
   var PADDING = 20;
+  var height = 150;
+  var width = 350;
   // show div
   document.getElementById('hist_price').style.display = "block";
-  d3.select('.content').remove();
+  d3.select('#hist_price').select('.content').remove();
 
   var g = d3.select('.svg_price')
   .append('g')
   .attr('class', 'content')
   .attr('transform', 'translate('+PADDING+','+PADDING+')');
 
-
-  g.append('rect')
-  .attr('width', 250)
-  .attr('height', 150)
-  .attr('fill', 'none')
-  .attr('stroke', 'black')
-  .attr('opacity', 0.4);
+  g.append('text')
+  .attr('transform', 'translate('+(width/2)+','+(PADDING/2)+')')
+  .attr('text-anchor', 'middle')
+  .attr('class', 'price_range')
 
   var price = data.map(d=>Number(d['Rent Amount']));
 
@@ -152,16 +155,20 @@ let plot_hist = function(data) {
 
   var x = d3.scaleLinear()
     .domain(d3.extent(price))
-    .rangeRound([0, 250]);
+    .rangeRound([PADDING, width-2*PADDING]);
+
+  var fixed_x = d3.scaleLinear()
+    .domain(d3.extent(price))
+    .rangeRound([PADDING, width-2*PADDING]);
 
   var bins = d3.histogram()
       .domain(x.domain())
-      .thresholds(x.ticks(20))
+      .thresholds(x.ticks(15))
       (price);
 
   var y = d3.scaleLinear()
       .domain([0, d3.max(bins, function(d) { return d.length; })])
-      .range([150, 0]);
+      .range([height-PADDING, PADDING]);
 
   var bar = g.selectAll(".bar")
     .data(bins)
@@ -172,8 +179,32 @@ let plot_hist = function(data) {
   bar.append("rect")
       .attr("x", 1)
       .attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
-      .attr("height", function(d) {return 150-y(d.length); })
+      .attr("height", function(d) {return height-PADDING-y(d.length); })
       .attr("fill", "steelblue");
+
+    var brush = d3.brushX()
+        .extent([[PADDING, PADDING], [width-PADDING, height-PADDING]])
+        .on("brush end", brushed);
+
+    function brushed() {
+      if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+      var s = d3.event.selection || x.range();
+      x.domain(s.map(x.invert, x));
+
+      var low = parseInt(fixed_x.invert(s[0]));
+      var high = parseInt(fixed_x.invert(s[1]));
+
+      var res = filter_by_prices(data, low, high);
+      show_search_result(res);
+
+      g.select('.price_range')
+      .text('$'+low + ' - $' + high)
+    }
+
+    g.append("g")
+       .attr("class", "brush")
+       .call(brush)
+       .call(brush.move, x.range());
 
   bar.append("text")
       .attr("dy", ".75em")
@@ -183,19 +214,23 @@ let plot_hist = function(data) {
       .attr("font", "sans-serif")
       .attr("font-size", "8px")
       .attr("fill", "#fff")
-      .text(function(d) { return formatCount(d.length); });
+      .text(function(d) {
+        if ((d.length) > 20){
+          return formatCount(d.length);
+        }
+      });
 
   g.append("g")
       .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + 150 + ")")
+      .attr("transform", "translate(0," + (height-PADDING) + ")")
       .call(d3.axisBottom(x));
 
   d3.select('.axis').selectAll('.tick')
   .attr("font-size", "6px");
 
   g.append('text')
-  .attr('x', 2*PADDING)
-  .attr('y', 150-PADDING/2)
+  .attr('x', width-2*PADDING)
+  .attr('y', height+PADDING*.8)
   .style('text-anchor', 'middle')
   .text('Close')
   .attr('font-size', '12px')
@@ -215,25 +250,167 @@ let plot_hist = function(data) {
     document.getElementById('hist_price').style.display = "none";
   });
 
+  // g.append('text')
+  // .attr('x', width-2*PADDING)
+  // .attr('y', height+PADDING*.8)
+  // .style('text-anchor', 'middle')
+  // .text('Enter')
+  // .attr('font-size', '12px')
+  // .attr('fill', 'black')
+  // .on('mouseover', function(d){
+  //   d3.select(this).style("cursor", "pointer")
+  //   .transition().duration(300)
+  //   .attr('font-size', '15px')
+  //   .attr('fill', 'pink')
+  // })
+  // .on('mouseout', function(d){
+  //   d3.select(this).transition().duration(300)
+  //   .attr('font-size', '12px')
+  //   .attr('fill', 'black')
+  // })
+  // .on('click', function(d){
+  //   document.getElementById('hist_price').style.display = "none";
+  // });
+}
+
+let plot_hist_year = function(data, map) {
+  var PADDING = 20;
+  var height = 150;
+  var width = 350;
+  // show div
+  document.getElementById('hist_year').style.display = "block";
+  d3.select('.svg_year').select('.content').remove();
+
+  var g = d3.select('.svg_year')
+  .append('g')
+  .attr('class', 'content')
+  .attr('transform', 'translate('+PADDING+','+PADDING+')');
+
   g.append('text')
-  .attr('x', 250-2*PADDING)
-  .attr('y', 150-PADDING/2)
+  .attr('transform', 'translate('+(width/2)+','+(PADDING/2)+')')
+  .attr('text-anchor', 'middle')
+  .attr('class', 'price_range')
+
+  var year = data.map(d=>Number(d['Year Built']));
+
+  var formatCount = d3.format(",.0f");
+
+  var x = d3.scaleLinear()
+    .domain(d3.extent(year))
+    .rangeRound([PADDING, width-2*PADDING]);
+
+  var fixed_x = d3.scaleLinear()
+    .domain(d3.extent(year))
+    .rangeRound([PADDING, width-2*PADDING]);
+
+  var bins = d3.histogram()
+      .domain(x.domain())
+      .thresholds(x.ticks(10))
+      (year);
+
+  var y = d3.scaleLinear()
+      .domain([0, d3.max(bins, function(d) { return d.length; })])
+      .range([height-PADDING, PADDING]);
+
+  var bar = g.selectAll(".bar")
+    .data(bins)
+    .enter().append("g")
+      .attr("class", "bar")
+      .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; });
+
+  bar.append("rect")
+      .attr("x", 1)
+      .attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
+      .attr("height", function(d) {return height-PADDING-y(d.length); })
+      .attr("fill", "steelblue");
+
+    var brush = d3.brushX()
+        .extent([[PADDING, PADDING], [width-PADDING, height-PADDING]])
+        .on("brush end", brushed);
+
+    function brushed() {
+      if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+      var s = d3.event.selection || x.range();
+      x.domain(s.map(x.invert, x));
+
+      var low = parseInt(fixed_x.invert(s[0]));
+      var high = parseInt(fixed_x.invert(s[1]));
+
+      var res = filter_by_year_built(data, low, high);
+      show_search_result(res);
+
+      g.select('.price_range')
+      .text(''+low + ' - ' + high)
+    }
+
+    g.append("g")
+       .attr("class", "brush")
+       .call(brush)
+       .call(brush.move, x.range());
+
+  bar.append("text")
+      .attr("dy", ".75em")
+      .attr("y", 6)
+      .attr("x", (x(bins[0].x1) - x(bins[0].x0)) / 2)
+      .attr("text-anchor", "middle")
+      .attr("font", "sans-serif")
+      .attr("font-size", "8px")
+      .attr("fill", "#fff")
+      .text(function(d) {
+        if ((d.length) > 20){
+          return formatCount(d.length);
+        }
+      });
+
+  g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + (height-PADDING) + ")")
+      .call(d3.axisBottom(x));
+
+  d3.select('.axis').selectAll('.tick')
+  .attr("font-size", "6px");
+
+  g.append('text')
+  .attr('x', width-2*PADDING)
+  .attr('y', height+PADDING*.8)
   .style('text-anchor', 'middle')
-  .text('Enter')
+  .text('Close')
   .attr('font-size', '12px')
   .attr('fill', 'black')
   .on('mouseover', function(d){
-    d3.select(this).style("cursor", "pointer")
-    .transition().duration(300)
+    d3.select(this).transition().duration(300)
     .attr('font-size', '15px')
     .attr('fill', 'pink')
   })
   .on('mouseout', function(d){
-    d3.select(this).transition().duration(300)
+    d3.select(this).style("cursor", "pointer")
+    .transition().duration(300)
     .attr('font-size', '12px')
     .attr('fill', 'black')
   })
   .on('click', function(d){
-    document.getElementById('hist_price').style.display = "none";
+    document.getElementById('hist_year').style.display = "none";
   });
+
+  // g.append('text')
+  // .attr('x', width-2*PADDING)
+  // .attr('y', height+PADDING*.8)
+  // .style('text-anchor', 'middle')
+  // .text('Enter')
+  // .attr('font-size', '12px')
+  // .attr('fill', 'black')
+  // .on('mouseover', function(d){
+  //   d3.select(this).style("cursor", "pointer")
+  //   .transition().duration(300)
+  //   .attr('font-size', '15px')
+  //   .attr('fill', 'pink')
+  // })
+  // .on('mouseout', function(d){
+  //   d3.select(this).transition().duration(300)
+  //   .attr('font-size', '12px')
+  //   .attr('fill', 'black')
+  // })
+  // .on('click', function(d){
+  //   document.getElementById('hist_price').style.display = "none";
+  // });
 }
