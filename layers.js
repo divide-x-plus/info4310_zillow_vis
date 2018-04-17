@@ -1,3 +1,9 @@
+// helper function to return a certain level of precision
+function precisionRound(number, precision) {
+  var factor = Math.pow(10, precision);
+  return Math.round(number * factor) / factor;
+}
+
 // show population local information
 // @params: feature -> geojsonfeature; map: instantiated Leaflet map object;
 // variable -> string representation of variables from the census data
@@ -85,12 +91,23 @@ function showMapLayer(feature, map, variable) {
         grades = divideRange(dataRange, 5),
         labels = [];
 
-    // loop through density intervals and generate a label with a colored square for interval
-    for (var i=0; i < grades.length; i++) {
-      div.innerHTML +=
-        '<i style="background:' + colorize(grades[i] + 1) + '"></i>' +
-        grades[i] + (grades[i+1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+
+
+    if (variable==="male_female_ratio") {
+      for (var i=0; i < grades.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' + colorize(precisionRound(grades[i],1) + 1) + '"></i>' +
+          precisionRound(grades[i],1) + (grades[i+1] ? '&ndash;' + precisionRound(grades[i + 1],1) + '<br>' : '+');
+      }
+    } else {
+      // loop through density intervals and generate a label with a colored square for interval
+      for (var i=0; i < grades.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' + colorize(precisionRound(grades[i],-1) + 1) + '"></i>' +
+          precisionRound(grades[i],-1) + (grades[i+1] ? '&ndash;' + precisionRound(grades[i + 1],-1) + '<br>' : '+');
+      }
     }
+
     return div;
   }
   legend.addTo(map);
