@@ -2,6 +2,7 @@
 // @params: feature -> geojsonfeature; map: instantiated Leaflet map object;
 // variable -> string representation of variables from the census data
 function showMapLayer(feature, map, variable) {
+  d3.selectAll('.map-filter').remove();
   let geo;
   // return the range of selected variable
   let dataRange = d3.extent(feature.features, function(d) {
@@ -23,7 +24,8 @@ function showMapLayer(feature, map, variable) {
         opacity: 0.5,
         color: 'white',
         dashArray: '3',
-        fillOpacity: 0.4
+        fillOpacity: 0.4,
+        className: 'map-filter'
     };
   }
 
