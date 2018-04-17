@@ -61,6 +61,11 @@
     </div>
   </div>
 
+  <div class="row">
+    <div id="search_criteria">
+    </div>
+  </div>
+
   <!-- History and Map -->
   <div id="hist_price" style="display:none; position: absolute; z-index: 10;"></div>
   <div id="hist_year" style="display:none; position: absolute; z-index: 10;"></div>
@@ -303,6 +308,33 @@ d3.queue()
         show_houses(temp, map);
       })
   });
+  // price histogram with brush filter
+  var res = d3.select('#search_criteria')
+  .append('svg')
+  .attr('width', 1200)
+  .attr('height', 50)
+  .attr('transform', 'translate(0,10)')
+  .style('background-color', '#fff');
+
+  res.append('text')
+  .text('Price: $' + filter_criteria.low_price + ' - $' + filter_criteria.high_price)
+  .attr('x', 0)
+  .attr('y', 25)
+  .attr('class', 'price_filter');
+
+
+  res.append('text')
+  .text('Year: ' + filter_criteria.low_year + ' - ' + filter_criteria.high_year)
+  .attr('x', 300)
+  .attr('y', 25)
+  .attr('class', 'year_filter');
+
+
+  res.append('text')
+  .text('House Type: ' + filter_criteria.type.join(', '))
+  .attr('x', 600)
+  .attr('y', 25)
+  .attr('class', 'type_filter');
 
   // price histogram with brush filter
   d3.select('#hist_price')

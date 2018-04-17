@@ -1,3 +1,11 @@
+let filter_criteria = {
+  'low_price': 804,
+  'high_price': 3964,
+  'low_year': 1817,
+  'high_year': 2013,
+  'type': ["SingleFamily", "MultiFamily2To4", "Condominium", "Townhouse"]
+};
+
 function mouse_over_event(d){
   d.target.setRadius(15);
 
@@ -29,7 +37,29 @@ function show_search_result(res){
   });
 }
 
+function update_filtering(data){
+  d3.select('.price_filter')
+  .text('Price: $' + filter_criteria.low_price + ' - $' + filter_criteria.high_price);
+
+  d3.select('.year_filter')
+  .text('Year: ' + filter_criteria.low_year + ' - ' + filter_criteria.high_year);
+
+  d3.select('.type_filter')
+  .text('House Type: ' + filter_criteria.type.join(', '))
+
+
+  data.forEach(function(d){
+    d.show = (Number(d['Rent Amount'])<= filter_criteria.high_price && Number(d['Rent Amount']) >= filter_criteria.low_price);
+    d.show = d.show && (filter_criteria.type.includes(d['Property Type']));
+    d.show = d.show && (Number(d['Year Built'])<= filter_criteria.high_year && Number(d['Year Built']) >= filter_criteria.low_year);
+    return d;
+  });
+  return data;
+}
+
 function filter_by_prices(data,low,high){
+  var low = filter_criteria.low_price;
+  var high = filter_criteria.high_price;
 
   data.forEach(function(d){
     d.show = (Number(d['Rent Amount'])<= high && Number(d['Rent Amount']) >= low);
@@ -46,6 +76,7 @@ function filter_by_neighborhood(data, neighborhood) {
 }
 
 function filter_by_home_type(data, home_type_lst) {
+  var home_type_lst = filter_criteria.type;
   data.forEach(function(d){
     d.show = (home_type_lst.includes(d['Property Type']));
     return d;
@@ -54,6 +85,8 @@ function filter_by_home_type(data, home_type_lst) {
 }
 
 function filter_by_year_built(data,low,high){
+  var low = filter_criteria.low_year;
+  var high = filter_criteria.high_year;
   data.forEach(function(d){
     d.show = (Number(d['Year Built'])<= high && Number(d['Year Built']) >= low);
     return d;
@@ -131,7 +164,10 @@ let plot_hist = function(data, map) {
       var low = parseInt(fixed_x.invert(s[0]));
       var high = parseInt(fixed_x.invert(s[1]));
 
-      var res = filter_by_prices(data, low, high);
+      filter_criteria.low_price = low;
+      filter_criteria.high_price = high;
+
+      var res = update_filtering(data);
       show_search_result(res);
 
       g.select('.price_range')
@@ -274,7 +310,10 @@ let plot_hist_year = function(data, map) {
       var low = parseInt(fixed_x.invert(s[0]));
       var high = parseInt(fixed_x.invert(s[1]));
 
-      var res = filter_by_year_built(data, low, high);
+      filter_criteria.low_year = low;
+      filter_criteria.high_year = high;
+
+      var res = update_filtering(data);
       show_search_result(res);
 
       g.select('.price_range')
@@ -320,7 +359,7 @@ let plot_hist_year = function(data, map) {
 
 
 let house_style_filter = function(data, map) {
-  let selected = ["SingleFamily", "MultiFamily2To4", "Condominium", "Townhouse"];
+  let selected = filter_criteria.type;
   var PADDING = 20;
   var height = 250;
   var width = 450;
@@ -369,7 +408,7 @@ let house_style_filter = function(data, map) {
         selected.push(house_style_list[i]);
       }
     }
-    var res = filter_by_home_type(data, selected);
+    var res = update_filtering(data);
     show_search_result(res);
   })
   .on('mouseover', function(){
