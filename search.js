@@ -145,16 +145,55 @@ let plot_hist = function(data) {
   .attr('width', 250)
   .attr('height', 150)
   .attr('fill', 'none')
-  .attr('stroke', 'black');
+  .attr('stroke', 'black')
+  .attr('opacity', 0.4);
 
-  g.append('circle')
-  .attr('cx', 10)
-  .attr('cy', 10)
-  .attr('r', 10);
+  var price = data.map(d=>Number(d['Rent Amount']));
 
-  var prices = d3.map(data, d=>Number(d["Rent Amount"]));
+  var formatCount = d3.format(",.0f");
 
-  console.log(prices);
+  var x = d3.scaleLinear()
+    .domain(d3.extent(price))
+    .rangeRound([0, 250]);
+
+  var bins = d3.histogram()
+      .domain(x.domain())
+      .thresholds(x.ticks(20))
+      (price);
+
+  var y = d3.scaleLinear()
+      .domain([0, d3.max(bins, function(d) { return d.length; })])
+      .range([150, 0]);
+
+  var bar = g.selectAll(".bar")
+    .data(bins)
+    .enter().append("g")
+      .attr("class", "bar")
+      .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; });
+
+  bar.append("rect")
+      .attr("x", 1)
+      .attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
+      .attr("height", function(d) {return 150-y(d.length); })
+      .attr("fill", "steelblue");
+
+  bar.append("text")
+      .attr("dy", ".75em")
+      .attr("y", 6)
+      .attr("x", (x(bins[0].x1) - x(bins[0].x0)) / 2)
+      .attr("text-anchor", "middle")
+      .attr("font", "sans-serif")
+      .attr("font-size", "8px")
+      .attr("fill", "#fff")
+      .text(function(d) { return formatCount(d.length); });
+
+  g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + 150 + ")")
+      .call(d3.axisBottom(x));
+
+  d3.select('.axis').selectAll('.tick')
+  .attr("font-size", "6px");
 
   g.append('text')
   .attr('x', 2*PADDING)
