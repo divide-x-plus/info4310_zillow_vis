@@ -1,20 +1,32 @@
-function showPopMapLayer(feature, map) {
+// show population local information
+// @params: feature -> geojsonfeature; map: instantiated Leaflet map object;
+// variable -> string representation of variables from the census data
+function showMapLayer(feature, map, variable) {
   let geo;
   // draw choropleth
-  let populationColorScheme = function(d) {
-      return d > 10000 ? '#800026' :
-             d > 5000  ? '#BD0026' :
-             d > 2000  ? '#E31A1C' :
-             d > 1000  ? '#FC4E2A' :
-             d > 500   ? '#FD8D3C' :
-             d > 200   ? '#FEB24C' :
-             d > 100   ? '#FED976' :
-                        '#FFEDA0';
-  }
+  // let populationColorScheme = function(d) {
+  //     return d > 10000 ? '#800026' :
+  //            d > 5000  ? '#BD0026' :
+  //            d > 2000  ? '#E31A1C' :
+  //            d > 1000  ? '#FC4E2A' :
+  //            d > 500   ? '#FD8D3C' :
+  //            d > 200   ? '#FEB24C' :
+  //            d > 100   ? '#FED976' :
+  //                       '#FFEDA0';
+  // }
+
+  // return the range of selected variable
+  let dataRange = d3.extent(feature.features, function(d) {
+    return (d.properties.census !== null) ? Number(d.properties.census[variable]) : 0;
+  })
+
+  let colors = ["#FFEDA0", "#FED976",  "#FEB24C", "#9955a8", "#573b88"];
+
+  let colorize = d3.scaleThreshold().domain(dataRange).range(colors);
 
   let populationMapLayer = function(feature) {
     return {
-        fillColor: populationColorScheme((feature.properties.census !== null) ? Number(feature.properties.census.total_pop) : 0),
+        fillColor: colorize((feature.properties.census !== null) ? Number(feature.properties.census[String(variable)]) : 0),
         weight: 1,
         opacity: 0.5,
         color: 'white',
@@ -57,17 +69,4 @@ function showPopMapLayer(feature, map) {
     onEachFeature: onEachFeature
   }).addTo(map);
 
-  let info = L.control();
-  info.onAdd = function(map) {
-    // create a div with class "info"
-    this._div = L.DomUtil.create('div', 'info');
-    this.update();
-    return this._div;
-  }
-  // helper function to update the control based on feature properties
-  info.update = function(props) {
-    this._div.innerHTML = '<h4>Population Density in this region</h4>' + (
-        props ? '<b>' + 'size of population: ' + props.census.total_pop + '</b>' : 'Missing Data 😢');
-  }
-  info.addTo(map);
 }

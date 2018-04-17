@@ -24,78 +24,77 @@
 
 <body>
 
+
+<div class="container-fluid">
   <div class="row">
-    <div class="col-lg-8">
-      <div class="container-fluid">
-        <img src="zillow_image.png" alt="Zillow Logo" style="">
-
-        <!-- Search Bar Area -->
-        <div class="form-group">
-          <select class="form-control" id="dropDownId">
-            <option value="value1">Arlington</option>
-            <option value="value2">Value2</option>
-            <option value="value3">Value3</option>
-            <!-- continue to add neighborhood options -->
-          </select>
-        </div>
-
-        <!-- Filters -->
-        <div class="row">
-          <div class='search_bar'>
-            <button type="button" class="btn btn-info" onclick="plot_hist(zillowData, map)">Price</button>
-            <button type="button" class="btn btn-info">Home type</button>
-            <button type="button" class="btn btn-info" onclick="plot_hist_year(zillowData, map)">Year built</button>
-            <button type="button" class="btn btn-info">More Filters</button>
-          </div>
-        </div>
-
-        <!-- History and Map -->
-        <div id="hist_price" style="display:none; position: absolute; z-index: 10;"></div>
-        <div id="hist_year" style="display:none; position: absolute; z-index: 10;"></div>
-        <div id="mapid" style="z-index: 0;"></div>
-
-      </div> <!-- end of fluid container -->
+    <div class="col-sm-2">
+      <img src="zillow_image.png" alt="Zillow Logo" style="width: 40px; height: 40px">
     </div>
-
-  <!-- Separate Map Layer -->
-  <div id="page-content">
-    <section class="main-content">
-      <div class="container-wide">
-        <div style="height: 600px">
-          <!-- Sidebar -->
-          <div id="sidebar" class="sidebar collapsed">
-
-            <!-- Navigation Tab -->
-            <div class="sidebar-tabs">
-              <ul role="tablist">
-                <li><a href="#home" role="tab"><i class="fa fa-pencil"></i></a></li>
-              </ul>
-              <ul role="tablist"></ul>
-            </div>
-
-            <!-- Tab Panes -->
-            <div class="sidebar-content">
-              <div class="sidebar-pane" id="home">
-                <h1 class="sidebar-header">
-                  Sidebar
-                  <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
-                </h1>
-                <p id="sidebar-text"></p>
-              </div>
-            </div>
-
-          </div> <!-- end of sidebar div -->
-
-          <!-- Map -->
-          <div id="mapid"></div>
-
-        </div> <!-- end of embeded large div -->
-      </div> <!-- end of .container-wide div -->
-    </section>
+    <div class="col-sm-8">
+      <!-- Search Bar Area -->
+      <div class="form-group">
+        <select class="form-control" id="dropDownId">
+          <option value="value1">Arlington</option>
+          <option value="value2">Value2</option>
+          <option value="value3">Value3</option>
+          <!-- continue to add neighborhood options -->
+        </select>
+      </div>
+    </div>
   </div>
 
-</div>
 
+  <!-- Filters -->
+  <div class="row">
+    <div class='search_bar'>
+      <button type="button" class="btn btn-info" onclick="plot_hist(zillowData, map)">Price</button>
+      <button type="button" class="btn btn-info">Home type</button>
+      <button type="button" class="btn btn-info" onclick="plot_hist_year(zillowData, map)">Year built</button>
+      <button type="button" class="btn btn-info">More Filters</button>
+    </div>
+  </div>
+
+  <!-- Local Info -->
+  <div class="row">
+    <div class="localInfo">
+      <button type="button" class="btn btn-info" id="popInfo">Population</button>
+      <button type="button" class="btn btn-info" id="genderRatio">Gender Ratio</button>
+      <button type="button" class="btn btn-info" id="medianAge">Median Age</button>
+      <button type="button" class="btn btn-info" id="medianInc">Median Income</button>
+      <button type="button" class="btn btn-info" id="travelTime">Mean Travel Time</button>
+    </div>
+  </div>
+
+  <!-- History and Map -->
+  <div id="hist_price" style="display:none; position: absolute; z-index: 10;"></div>
+  <div id="hist_year" style="display:none; position: absolute; z-index: 10;"></div>
+  <div id="mapid" style="z-index: 0;"></div>
+
+  <div style="height: 600px">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar collapsed">
+
+      <!-- Navigation Tab -->
+      <div class="sidebar-tabs">
+        <ul role="tablist">
+          <li><a href="#home" role="tab"><i class="fa fa-pencil"></i></a></li>
+        </ul>
+        <ul role="tablist"></ul>
+      </div>
+
+      <!-- Tab Panes -->
+      <div class="sidebar-content">
+        <div class="sidebar-pane" id="home">
+          <h1 class="sidebar-header">
+            Shopping Cart
+            <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+          </h1>
+          <p id="sidebar-text"></p>
+        </div>
+      </div>
+    </div> <!-- end of sidebar div -->
+  </div> <!-- end of embeded large div -->
+</div> <!-- end of fluid container -->
 
 </body>
 
@@ -106,7 +105,7 @@ let geojsonFeature, censusData, zillowData;
 let thisResult, map;
 
 d3.queue()
-.defer(d3.csv, "./data/census_data.csv")
+.defer(d3.csv, "./data/canonical_census_data.csv")
 .defer(d3.json,"./data/allegheny_county_census_tracts_2016.geojson")
 .defer(d3.csv, "./data/zillow_pittsburgh.csv")
 .await(function(error, f1, f2, f3) {
@@ -123,7 +122,6 @@ d3.queue()
     // append census data to geoJSON feature.properties
     row.properties.census = (result[0] !== undefined) ? result[0] : null;
   })
-  let results = []; //store all results from zillowData
 
   // function to open sidebar and more content when clicking button in popup
 
@@ -134,7 +132,7 @@ d3.queue()
       $("#sidebar-text").removeText();
     }
 
-    results.forEach(function(d) {
+    zillowData.forEach(function(d) {
 
       if (Number(d.ZPID) === parseInt(ID)) {
         thisResult = d;
@@ -178,7 +176,6 @@ d3.queue()
         '"' +
         ">Add to Cart</button>"
       );
-      results.push(d);
       return cMarker;
     })
 
@@ -214,14 +211,14 @@ d3.queue()
   map.addControl(sidebar); //used an imported slightly modified leaflet library
 
 
-  d3.select("#pop-btn")
+  d3.select("#popInfo")
     .on("click", function() {
       // remove dots and existing map layers to avoid overlaps
       d3.selectAll('.circle_plots')
       .remove();
 
-      showPopMapLayer(geojsonFeature, map);
-      // need to call show_houses again so dots are on top of map
+      showMapLayer(geojsonFeature, map, "total_pop");
+
       show_houses(zillowData, map);
     });
 
