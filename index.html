@@ -33,12 +33,7 @@
     <div class="col-sm-8">
       <!-- Search Bar Area -->
       <div class="form-group">
-        <select class="form-control" id="dropDownId">
-          <option value="value1">Arlington</option>
-          <option value="value2">Value2</option>
-          <option value="value3">Value3</option>
-          <!-- continue to add neighborhood options -->
-        </select>
+        <select class="form-control" id="dropDownId"></select>
       </div>
     </div>
   </div>
@@ -117,6 +112,22 @@ d3.queue()
   censusData = f1;
   geojsonFeature = f2; //geoJSON.features contain polygons
   zillowData = f3;
+
+  // temporarily store neighborhood data
+  let temp_neighborhood_values = [];
+
+  zillowData.forEach(function(d) {
+    temp_neighborhood_values.push(d.Neighborhood)
+  })
+
+  const neighborhoods = new Set(temp_neighborhood_values);
+
+  // populate neigborhood options for dropdown list
+  neighborhoods.forEach(function(d) {
+    d3.select("#dropDownId").append("option")
+      .attr("value", String(d))
+      .text(String(d))
+  })
 
   geojsonFeature.features.forEach(function(row) {
     // ensure no missing value from census tract id
@@ -281,7 +292,15 @@ d3.queue()
   var res = filter_by_prices(zillowData, 1000, 1500);
   show_houses(res, map);
 
-
+  // neighborhood dropdown selection
+  $(function(){
+      $('#dropDownId').change(function() {
+        let selected_neighborhood = $('#dropDownId').find(":selected").text();
+        let temp = filter_by_neighborhood(zillowData, selected_neighborhood)
+        d3.selectAll('.circle_plots').remove();
+        show_houses(temp, map);
+      })
+  });
 
   // price histogram with brush filter
   d3.select('#hist_price')
