@@ -12,11 +12,9 @@
 
   <!-- External Libraries -->
   <script src="library/leaflet.js"></script>
-  <!-- <script src="library/leaflet-sidebar.min.js"></script> -->
   <script src="library/d3.js"></script>
   <script src="library/jquery.js"></script>
   <script src="library/external.js"></script>
-  <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.2/esri-leaflet.js"></script>
 
 
   <!-- Custom Scripts -->
@@ -29,7 +27,8 @@
   <div class="row">
     <div class="col-lg-8">
       <div class="container-fluid">
-        <img src="zillow_image.png" alt="Zillow Logo">
+        <img src="zillow_image.png" alt="Zillow Logo" style="">
+
         <!-- Search Bar Area -->
         <div class="form-group">
           <select class="form-control" id="dropDownId">
@@ -57,27 +56,6 @@
 
       </div> <!-- end of fluid container -->
     </div>
-
-    <!-- Filters -->
-    <div class="row">
-      <div class='search_bar'>
-        <button type="button" class="btn btn-info">Price</button>
-        <button type="button" class="btn btn-info">Home type</button>
-        <button type="button" class="btn btn-info">Year built</button>
-        <button type="button" class="btn btn-info">More Filters</button>
-      </div>
-    </div>
-
-    <!-- History and Map -->
-    <!-- <div id="hist_price" style="display:none;"></div> -->
-
-
-    <!-- Right Sidebar for Local Info and Shopping Cart -->
-    <!-- <div class="col-lg-4">
-      <div style="background-color: black">
-        <button type="button" class="btn btn-info" id="pop-btn">Population</button>
-      </div>
-    </div> -->
 
   <!-- Separate Map Layer -->
   <div id="page-content">
@@ -135,50 +113,7 @@ d3.queue()
   if (error) throw error;
   censusData = f1;
   geojsonFeature = f2; //geoJSON.features contain polygons
-  zillowData = f3.filter(function(d) {
-    return +d["Rent Amount"] > 1000;
-  });
-
-  // parse data to their appropriate datatype before data join
-  // censusData.forEach(function(e) {
-  //   e.bycicle = +e.bycicle;
-  //   e.car_truck_van = +e.car_truck_van;
-  //   e.car_truck_van_alone = +e.car_truck_van_alone;
-  //   e.car_truck_van_carpooled = +e.car_truck_van_carpooled;
-  //   e.female_percent = +e.female_percent;
-  //   e.male_percent = +e.male_percent;
-  //   e.mean_travel_time = +e.mean_travel_time;
-  //   e.median_age = +e.median_age;
-  //   e.median_income = +e.median_income;
-  //   e.public_transport = +e.public_transport;
-  //   e.total_commute = +e.total_commute;
-  //   e.total_pop = +e.total_pop;
-  //   e.walked = +e.walked;
-  // })
-  //
-  // zillowData.forEach(function(e){
-  //   e.Bathroom = +e.Bathroom;
-  //   e.Bedrooms = +e.Bedrooms;
-  //   e["Finished Size (Sq.Ft.)"] = +e["Finished Size (Sq.Ft.)"];
-  //   e["Last Sold Date"] = new Date(e["Last Sold Date"]);
-  //   e["Last Sold Price"] = +e["Last Sold Price"];
-  //   e["Lot Size (Sq.Ft.)"] = +e["Lot Size (Sq.Ft.)"];
-  //   e["Months Since Last Sold"] = +e["Months Since Last Sold"];
-  //   e["Rent Amount"] = +e["Rent Amount"];
-  //   e["Rent Amt 1-Week Change"] = +e["Rent Amt 1-Week Change"];
-  //   e["Rent Amt Maximum"] = +e["Rent Amt Maximum"];
-  //   e["Rent-to-Finished Size Ratio"] = +e["Rent-to-Finished Size Ratio"];
-  //   e["Sale Amount"] = +e["Sale Amount"];
-  //   e["Sale Amt 1-Week Change"] = +e["Sale Amt 1-Week Change"];
-  //   e["Sale Amt Maximum"] = +e["Sale Amt Maximum"];
-  //   e["Sale Amt Minimum"] = +e["Sale Amt Minimum"];
-  //   e["Sale-to-Finished Size Ratio"] = +e["Sale-to-Finished Size Ratio"];
-  //   e["Sale-to-Rent Ratio"] = +e["Sale-to-Rent Ratio"];
-  //   e["Tax Assessment Amt"] = +e["Tax Assessment Amt"];
-  //   e["Tax Assessment Year"] = +e["Tax Assessment Year"];
-  //   e["Total Rooms"] = +e["Total Rooms"];
-  //   e["Year Built"] = +e["Year Built"];
-  // })
+  zillowData = f3;
 
   geojsonFeature.features.forEach(function(row) {
     // ensure no missing value from census tract id
@@ -289,13 +224,14 @@ d3.queue()
       // need to call show_houses again so dots are on top of map
       show_houses(zillowData, map);
     });
+
   var res = filter_by_prices(zillowData, 1000, 1500);
   show_houses(res, map);
 
 
 
-  // hist graph with brush
-  var svg = d3.select('#hist_price')
+  // price histogram with brush filter
+  d3.select('#hist_price')
   .append('svg')
   .attr('width', 400)
   .attr('height', 200)
@@ -303,7 +239,8 @@ d3.queue()
   .style('background-color', '#fff')
   .attr('class', 'svg_price');
 
-  var svg = d3.select('#hist_year')
+  // year histogram with brush filter
+  d3.select('#hist_year')
   .append('svg')
   .attr('width', 400)
   .attr('height', 200)
