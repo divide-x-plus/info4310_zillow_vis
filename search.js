@@ -6,12 +6,6 @@ function mouse_over_event(d){
   .duration(1000)
   .attr('fill', 'blue')
   .attr('stroke-opacity', 0);
-
-  // d3.selectAll('.circle_plots')
-  // .enter()
-  // .attr('fill', function(d){
-  //   console.log(d)
-  // });
 }
 
 function mouse_out_event(d){
@@ -25,69 +19,6 @@ function mouse_click_event(d){
   .duration(500)
   .attr('fill-opacity', 1);
 }
-
-// let results = []; //store all results from zillowData
-
-// function to open sidebar and more content when clicking button in popup
-// var thisResult;
-// function openSidebar(ID) {
-//   // TODO: need to change this as we want to stack results?
-//   if ($("#sidebar-text").text().length > 0) {
-//     $("#sidebar-text").removeText();
-//   }
-//
-//   zillowData.forEach(function(d) {
-//     if (d.ZPID === parseInt(ID)) {
-//       thisResult = d;
-//     }
-//   })
-//   sidebar.open("home");
-//
-//   let divToAddContent = document.getElementById("home");
-//   divToAddContent.innerHTML =
-//     "Price:</br>" +
-//     thisResult["Rent Amount"];
-// }
-//
-// function show_houses(coords, map){
-//
-//
-//   // add markers and tooltips
-//   coords.forEach(function(d) {
-//     d.show = true;
-//
-//     let cMarker = L.circleMarker([Number(d.Latitude), Number(d.Longitude)], //latlng
-//       {
-//         radius: 8,
-//         fillColor: "#ff7800",
-//         color: "#000",
-//         weight: 1,
-//         opacity: 1,
-//         fillOpacity: 0.8
-//     }); //style
-//
-//     cMarker.on("click", mouse_click_event)
-//     cMarker.on("mouseout", mouse_out_event)
-//
-//     cMarker.addTo(map)
-//     .bindPopup(
-//       '<strong>$'+ d["Rent Amount"] + '</strong>'+
-//       '<br/><button type="button" class="btn btn-primary sidebar-open-button" data="' +
-//       d.ZPID +
-//       '"' +
-//       ">Add to Cart</button>"
-//     );
-//     // results.push(coords);
-//     // return cMarker;
-//   })
-//
-//   // bind data so later we can modify
-//   d3.selectAll('.circle_plots')
-//   .data(coords)
-// }
-
-
-
 
 
 function show_search_result(res){
