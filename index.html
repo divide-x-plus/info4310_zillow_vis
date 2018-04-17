@@ -48,7 +48,7 @@
   <div class="row">
     <div class='search_bar'>
       <button type="button" class="btn btn-info" onclick="plot_hist(zillowData, map)">Price</button>
-      <button type="button" class="btn btn-info">Home type</button>
+      <button type="button" class="btn btn-info" onclick="house_style_filter(zillowData, map)">Home type</button>
       <button type="button" class="btn btn-info" onclick="plot_hist_year(zillowData, map)">Year built</button>
       <button type="button" class="btn btn-info">More Filters</button>
     </div>
@@ -68,6 +68,7 @@
   <!-- History and Map -->
   <div id="hist_price" style="display:none; position: absolute; z-index: 10;"></div>
   <div id="hist_year" style="display:none; position: absolute; z-index: 10;"></div>
+  <div id="house_style" style="display:none; position: absolute; z-index: 10;"></div>
   <div id="mapid" style="z-index: 0;"></div>
 
   <div style="height: 600px">
@@ -167,8 +168,9 @@ d3.queue()
           fillOpacity: 0.8
       }); //style
 
-      cMarker.on("click", mouse_click_event)
-      // cMarker.on("mouseout", mouse_out_event)
+      cMarker.on("mouseout", mouse_out_event)
+      cMarker.on("mouseover", mouse_over_event)
+
 
       cMarker.addTo(map)
       .bindPopup(
@@ -274,20 +276,28 @@ d3.queue()
   // price histogram with brush filter
   d3.select('#hist_price')
   .append('svg')
-  .attr('width', 400)
-  .attr('height', 200)
-  .attr('transform', 'translate(100,100)')
+  .attr('width', 500)
+  .attr('height', 300)
+  .attr('transform', 'translate(50,100)')
   .style('background-color', '#fff')
   .attr('class', 'svg_price');
 
   // year histogram with brush filter
   d3.select('#hist_year')
   .append('svg')
-  .attr('width', 400)
-  .attr('height', 200)
-  .attr('transform', 'translate(100,100)')
+  .attr('width', 500)
+  .attr('height', 300)
+  .attr('transform', 'translate(50,100)')
   .style('background-color', '#fff')
   .attr('class', 'svg_year');
+
+  d3.select('#house_style')
+  .append('svg')
+  .attr('width', 500)
+  .attr('height', 300)
+  .attr('transform', 'translate(50,100)')
+  .style('background-color', '#fff')
+  .attr('class', 'svg_style');
 
 }); //end of d3.queue
 
