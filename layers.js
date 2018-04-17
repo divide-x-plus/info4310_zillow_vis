@@ -3,37 +3,18 @@
 // variable -> string representation of variables from the census data
 function showMapLayer(feature, map, variable) {
   let geo;
-  // draw choropleth
-  // let populationColorScheme = function(d) {
-  //     return d > 10000 ? '#800026' :
-  //            d > 5000  ? '#BD0026' :
-  //            d > 2000  ? '#E31A1C' :
-  //            d > 1000  ? '#FC4E2A' :
-  //            d > 500   ? '#FD8D3C' :
-  //            d > 200   ? '#FEB24C' :
-  //            d > 100   ? '#FED976' :
-  //                       '#FFEDA0';
-  // }
-
   // return the range of selected variable
   let dataRange = d3.extent(feature.features, function(d) {
     return (d.properties.census !== null) ? Number(d.properties.census[variable]) : 0;
   })
 
-  console.log(dataRange);
-
-  let colors = ["#7F3C8D",
-            "#11A579",
-            "#3969AC",
-            "#F2B701",
-            "#E73F74",
-            "#80BA5A",
-            "#E68310",
-            "#A5AA99"];
+  let colors = ["#ffc6c4",
+            "#ee919b",
+            "#cc607d",
+            "#9e3963",
+            "#672044"];
 
   let colorize = d3.scaleOrdinal().domain(dataRange).range(colors);
-
-  console.log(colorize(100))
 
   let populationMapLayer = function(feature) {
     return {
@@ -80,4 +61,35 @@ function showMapLayer(feature, map, variable) {
     onEachFeature: onEachFeature
   }).addTo(map);
 
+  // helper function to divide an array into equal parts
+  // @params: array to divide, num of parts
+  let divideRange = function(array, num) {
+    let step = (array[1] - array[0])/num
+    let result = [];
+    for (i=0; i < num+1; i++) {
+      if (result.length === 0) {
+        result.push(i*step)
+      } else {
+        result.push(result[i-1] + step)
+      }
+    }
+    return result;
+  }
+
+  // add legend
+  let legend = L.control({position: 'bottomright'});
+  legend.onAdd = function(map) {
+    let div = L.DomUtil.create('div', 'info legend'),
+        grades = divideRange(dataRange, 5),
+        labels = [];
+
+    // loop through density intervals and generate a label with a colored square for interval
+    for (var i=0; i < grades.length; i++) {
+      div.innerHTML +=
+        '<i style="background:' + colorize(grades[i] + 1) + '"></i>' +
+        grades[i] + (grades[i+1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+    return div;
+  }
+  legend.addTo(map);
 }
