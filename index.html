@@ -5,6 +5,9 @@
   <!-- Metadata -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Adding Favicon -->
+  <link rel="shortcut icon" type="image/png" href="/zillow_image.png"/>
+
   <!-- Import Style Sheets -->
   <link rel="stylesheet" href="style/leaflet.css"/>
   <link rel="stylesheet" href="style/bootstrap.css"/>
@@ -165,8 +168,14 @@ d3.queue()
 
     let divToAddContent = document.getElementById("home");
     divToAddContent.innerHTML =
-      "Price:</br>" +
-      thisResult["Rent Amount"];
+      '<strong>Neighborhood: </strong>' + thisResult["Neighborhood"] + '<br/>' +
+      '<strong>Address: </strong>' + thisResult["Street Address"] + '<br/>' +
+      "<strong>Price: </strong>" + '$'+ thisResult["Rent Amount"] + '<br/>' +
+      "<strong>Bedrooms: </strong>" + thisResult["Bedrooms"] + '<br/>' +
+      "<strong>Bathroom: </strong>" + thisResult["Bathroom"] + '<br/>' +
+      "<strong>Total Rooms: </strong>" + thisResult["Total Rooms"] + '<br/>' +
+      "<strong>Finished Size: </strong>" + thisResult["Finished Size (Sq.Ft.)"] + 'sq.ft.' + '<br/>' +
+      "<strong>Year Built: </strong>" + thisResult["Year Built"] + '<br/>';
   }
 
   function show_houses(coords, map){
@@ -193,8 +202,9 @@ d3.queue()
 
       cMarker.addTo(map)
       .bindPopup(
-        '<strong>$'+ d["Rent Amount"] + '</strong>'+
-        '<br/><button type="button" class="btn btn-primary sidebar-open-button" data="' +
+        '<strong><font size="4">$'+ d["Rent Amount"] + '</font></strong>'+ '<br/></br/>' +
+        d["Bathroom"] + " bth " + d["Bedrooms"] + " bds " + d["Finished Size (Sq.Ft.)"] + " sqft" + '<br/>' +
+        '<button type="button" class="btn btn-outline-primary sidebar-open-button" data="' +
         d.ZPID +
         '"' +
         ">Add to Cart</button>"
