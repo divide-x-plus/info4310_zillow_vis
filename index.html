@@ -37,33 +37,33 @@
     <div class="form-group">
       <span><strong>Select Neighborhood: </strong></span>
       <select class="form-control" id="dropDownId"></select>
+
     </div>
     <!-- Filters -->
     <div class="row">
-      <div class='search_bar'>
-        <button type="button" class="btn btn-info" onclick="plot_hist(zillowData, map)">Price</button>
-        <button type="button" class="btn btn-info" onclick="house_style_filter(zillowData, map)">Home type</button>
-        <button type="button" class="btn btn-info" onclick="plot_hist_year(zillowData, map)">Year built</button>
+      <div class="col-md-6">
+        <div class='search_bar'>
+          <button type="button" class="btn btn-info" onclick="plot_hist(zillowData, map)">Price</button>
+          <button type="button" class="btn btn-info" onclick="house_style_filter(zillowData, map)">Home type</button>
+          <button type="button" class="btn btn-info" onclick="plot_hist_year(zillowData, map)">Year built</button>
+        </div>
+        <div id="search_criteria"></div>
+      </div>
+      <div class="col-md-6">
+        <font size="6"><strong>Local Information:    </strong></font>
+        <div class="localInfo">
+          <button type="button" class="btn btn-info" id="popInfo">Population Density</button>
+          <button type="button" class="btn btn-info" id="genderRatio">Gender Ratio</button>
+          <button type="button" class="btn btn-info" id="medianAge">Age</button>
+          <button type="button" class="btn btn-info" id="medianInc">Income</button>
+          <button type="button" class="btn btn-info" id="travelTime">Commute Time</button>
+          <button type="button" class="btn btn-info" id="remove">Remove Layer</button>
+        </div>
       </div>
     </div>
-
-
-    <!-- Local Info -->
-    <div class="row">
-      <font size="6"><strong>Local Information:    </strong></font>
-      <div class="localInfo">
-        <button type="button" class="btn btn-info" id="popInfo">Population Density</button>
-        <button type="button" class="btn btn-info" id="genderRatio">Gender Ratio</button>
-        <button type="button" class="btn btn-info" id="medianAge">Age</button>
-        <button type="button" class="btn btn-info" id="medianInc">Income</button>
-        <button type="button" class="btn btn-info" id="travelTime">Commute Time</button>
-        <button type="button" class="btn btn-info" id="remove">Remove Layer</button>
-      </div>
-    </div>
-  </div>
 
   <div class="row">
-    <div id="search_criteria"></div>
+
   </div>
 
   <!-- History and Map -->
@@ -227,7 +227,7 @@ d3.queue()
       maxZoom: 15,
       minZoom: 12,
       zoomSnap: 0.2,
-      id: 'mapbox.streets',
+      id: 'mapbox.light',
       accessToken: mapboxAccessToken
   }).addTo(map);
 

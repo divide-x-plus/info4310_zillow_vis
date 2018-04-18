@@ -16,7 +16,11 @@ function showMapLayer(feature, map, variable) {
     return (d.properties.census !== null) ? Number(d.properties.census[variable]) : 0;
   })
 
-  let colors = ['#fef0d9', '#fdcc8a','#fc8d59','#e34a33','#b30000'];
+  let colors = ['#ffffcc',
+'#a1dab4',
+'#41b6c4',
+'#2c7fb8',
+'#253494'];
 
   let colorize = d3.scaleOrdinal().domain(dataRange).range(colors);
 
@@ -125,14 +129,14 @@ function showMapLayer(feature, map, variable) {
 
 
     if (variable==="male_female_ratio") {
-      for (var i=0; i < grades.length; i++) {
+      for (var i=0; i < grades.length - 1; i++) {
         div.innerHTML +=
           '<i style="background:' + colorize(precisionRound(grades[i],1) + 1) + '"></i>' +
           precisionRound(grades[i],1) + (grades[i+1] ? '&ndash;' + precisionRound(grades[i + 1],1) + '<br>' : '+');
       }
     } else {
       // loop through density intervals and generate a label with a colored square for interval
-      for (var i=0; i < grades.length; i++) {
+      for (var i=0; i < grades.length - 1; i++) {
         div.innerHTML +=
           '<i style="background:' + colorize(precisionRound(grades[i],-1) + 1) + '"></i>' +
           precisionRound(grades[i],-1) + (grades[i+1] ? '&ndash;' + precisionRound(grades[i + 1],-1) + '<br>' : '+');
