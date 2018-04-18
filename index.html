@@ -75,12 +75,10 @@
   <div style="height: 600px">
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar collapsed">
-
       <!-- Navigation Tab -->
       <div class="sidebar-tabs">
         <ul role="tablist">
           <li><a href="#home" role="tab">
-            <!-- <i class="fa fa-pencil"></i> -->
             <div class="sidebar-menu"></div>
             <div class="sidebar-menu"></div>
             <div class="sidebar-menu"></div>
@@ -100,7 +98,9 @@
         </div>
       </div>
     </div> <!-- end of sidebar div -->
+
   </div> <!-- end of embeded large div -->
+
 </div> <!-- end of fluid container -->
 
 </div>
@@ -113,6 +113,7 @@ let mapboxAccessToken = 'pk.eyJ1IjoiamltLXplZC1saSIsImEiOiJjamZjeGVzNzYzY3l4Mndw
 let geojsonFeature, censusData, zillowData;
 let thisResult, map;
 var res; // store the state of data
+let divToAddContent; // reserve for innerhtml in text
 
 d3.queue()
 .defer(d3.csv, "./data/canonical_census_data.csv")
@@ -154,12 +155,11 @@ d3.queue()
   function openSidebar(ID) {
 
     // TODO: need to change this as we want to stack results?
-    if ($("#sidebar-text").text().length > 0) {
-      $("#sidebar-text").removeText();
-    }
+    // if ($("#sidebar-text").text().length > 0) {
+    //   // $("#sidebar-text").removeText();
+    // }
 
     zillowData.forEach(function(d) {
-
       if (Number(d.ZPID) === parseInt(ID)) {
         thisResult = d;
       }
@@ -167,16 +167,22 @@ d3.queue()
 
     sidebar.open("home");
 
-    let divToAddContent = document.getElementById("home");
-    divToAddContent.innerHTML =
-      '<strong>Neighborhood: </strong>' + thisResult["Neighborhood"] + '<br/>' +
-      '<strong>Address: </strong>' + thisResult["Street Address"] + '<br/>' +
-      "<strong>Price: </strong>" + '$'+ thisResult["Rent Amount"] + '<br/>' +
-      "<strong>Bedrooms: </strong>" + thisResult["Bedrooms"] + '<br/>' +
-      "<strong>Bathroom: </strong>" + thisResult["Bathroom"] + '<br/>' +
-      "<strong>Total Rooms: </strong>" + thisResult["Total Rooms"] + '<br/>' +
-      "<strong>Finished Size: </strong>" + thisResult["Finished Size (Sq.Ft.)"] + 'sq.ft.' + '<br/>' +
-      "<strong>Year Built: </strong>" + thisResult["Year Built"] + '<br/>';
+    divToAddContent = document.getElementById("sidebar-text");
+
+    if ($("sidebar-text").text().length > 0) {
+      console.log("testing conditional loop")
+      divToAddContent.innerHTML + '<b>hello</b>hello';
+    } else {
+      divToAddContent.innerHTML =
+        '<strong>Neighborhood: </strong>' + thisResult["Neighborhood"] + '<br/>' +
+        '<strong>Address: </strong>' + thisResult["Street Address"] + '<br/>' +
+        "<strong>Price: </strong>" + '$'+ thisResult["Rent Amount"] + '<br/>' +
+        "<strong>Bedrooms: </strong>" + thisResult["Bedrooms"] + '<br/>' +
+        "<strong>Bathroom: </strong>" + thisResult["Bathroom"] + '<br/>' +
+        "<strong>Total Rooms: </strong>" + thisResult["Total Rooms"] + '<br/>' +
+        "<strong>Finished Size: </strong>" + thisResult["Finished Size (Sq.Ft.)"] + 'sq.ft.' + '<br/>' +
+        "<strong>Year Built: </strong>" + thisResult["Year Built"] + '<br/>';
+      }
   }
 
   function show_houses(coords, map){
@@ -227,7 +233,7 @@ d3.queue()
       maxZoom: 15,
       minZoom: 12,
       zoomSnap: 0.2,
-      id: 'mapbox.light',
+      id: 'mapbox.streets',
       accessToken: mapboxAccessToken
   }).addTo(map);
 

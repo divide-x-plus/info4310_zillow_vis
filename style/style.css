@@ -71,7 +71,7 @@ text-align: right;
 
 #sidebar {
   position: absolute;
-  height:  200px;
+  height:  300px;
   top: 10px;
   right: 10px;
   z-index: 1000;
