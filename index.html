@@ -30,13 +30,14 @@
 
 <div class="container-fluid">
   <h1>ExploRentals</h1>
-  <!-- Dropdown for selecting neighborhood -->
-  <div class="form-group">
-    <span><strong>Select Neighborhood: </strong></span>
-    <select class="form-control" id="dropDownId"></select>
-  </div>
+
 
   <div class="container-fluid">
+    <!-- Dropdown for selecting neighborhood -->
+    <div class="form-group">
+      <span><strong>Select Neighborhood: </strong></span>
+      <select class="form-control" id="dropDownId"></select>
+    </div>
     <!-- Filters -->
     <div class="row">
       <div class='search_bar'>
@@ -49,6 +50,7 @@
 
     <!-- Local Info -->
     <div class="row">
+      <font size="6"><strong>Local Information:    </strong></font>
       <div class="localInfo">
         <button type="button" class="btn btn-info" id="popInfo">Population Density</button>
         <button type="button" class="btn btn-info" id="genderRatio">Gender Ratio</button>
@@ -77,7 +79,12 @@
       <!-- Navigation Tab -->
       <div class="sidebar-tabs">
         <ul role="tablist">
-          <li><a href="#home" role="tab"><i class="fa fa-pencil"></i></a></li>
+          <li><a href="#home" role="tab">
+            <!-- <i class="fa fa-pencil"></i> -->
+            <div class="sidebar-menu"></div>
+            <div class="sidebar-menu"></div>
+            <div class="sidebar-menu"></div>
+          </a></li>
         </ul>
         <ul role="tablist"></ul>
       </div>

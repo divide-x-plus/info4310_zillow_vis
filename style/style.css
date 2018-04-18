@@ -6,6 +6,7 @@
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
 }
+
 .info h4 {
     margin: 0 0 5px;
     color: #777;
@@ -57,14 +58,26 @@ background: white;
 text-align: right;
 }
 
+.sidebar-menu {
+    width: 20px;
+    height: 3px;
+    background-color: black;
+    margin: 3px 0px 0px 12px;
+}
+
+.form-group {
+  width: 400px
+}
+
 #sidebar {
-position: absolute;
-height:  650px;
-top: 10px;
-right: 10px;
-z-index: 1000;
-padding: 1em;
-background: white;
+  position: absolute;
+  height:  300px;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  padding: 1em;
+  background: white;
+  overflow: auto;
 }
 
 .sidebar {
@@ -72,10 +85,12 @@ position: absolute;
 top: 0;
 bottom: 0;
 width: 100%;
-overflow: hidden;
-z-index: 2000; }
+overflow: auto;
+z-index: -1; }
+
 .sidebar.collapsed {
 width: 40px; }
+
 @media (max-width: 767px) {
 .sidebar {
 width: 250px; } }
