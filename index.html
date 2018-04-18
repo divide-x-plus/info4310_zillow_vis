@@ -337,15 +337,15 @@ d3.queue()
 
   display_criteria.append('text')
   .text('Year: ' + filter_criteria.low_year + ' - ' + filter_criteria.high_year)
-  .attr('x', 300)
+  .attr('x', 175)
   .attr('y', 25)
   .attr('class', 'year_filter');
 
 
   display_criteria.append('text')
   .text('House Type: ' + filter_criteria.type.join(', '))
-  .attr('x', 600)
-  .attr('y', 25)
+  .attr('x', 0)
+  .attr('y', 50)
   .attr('class', 'type_filter');
 
   // price histogram with brush filter
